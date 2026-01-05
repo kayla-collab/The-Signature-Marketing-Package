@@ -61,7 +61,10 @@ db.serialize(() => {
     file_url TEXT,
     description TEXT,
     allow_download INTEGER,
-    allow_copy INTEGER
+    allow_copy INTEGER,
+    file_size INTEGER,
+    original_filename TEXT,
+    source_type TEXT
   )`);
 
   // global_welcome_message

@@ -901,6 +901,53 @@ function handleHashNavigation() {
     }
 }
 
+// Toggle Fullscreen Mode
+function toggleFullscreen() {
+    const body = document.body;
+    const btn = document.getElementById('fullscreenToggle');
+    const icon = btn.querySelector('.icon-expand');
+    
+    if (!body.classList.contains('fullscreen-mode')) {
+        // Enter fullscreen
+        body.classList.add('fullscreen-mode');
+        icon.textContent = '⤡'; // Compress icon
+        btn.innerHTML = '<span class="icon-expand">⤡</span> Exit Fullscreen';
+        
+        // Try browser fullscreen if available
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log('Browser fullscreen not allowed:', err);
+            });
+        }
+    } else {
+        // Exit fullscreen
+        body.classList.remove('fullscreen-mode');
+        icon.textContent = '⤢'; // Expand icon
+        btn.innerHTML = '<span class="icon-expand">⤢</span> Fullscreen';
+        
+        // Exit browser fullscreen
+        if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(err => {
+                console.log('Error exiting browser fullscreen:', err);
+            });
+        }
+    }
+}
+
+// Handle browser fullscreen change (e.g. user presses Esc)
+document.addEventListener('fullscreenchange', () => {
+    const body = document.body;
+    const btn = document.getElementById('fullscreenToggle');
+    
+    if (!document.fullscreenElement && body.classList.contains('fullscreen-mode')) {
+        // Browser exited fullscreen (e.g. Esc pressed), so sync UI
+        body.classList.remove('fullscreen-mode');
+        if (btn) {
+            btn.innerHTML = '<span class="icon-expand">⤢</span> Fullscreen';
+        }
+    }
+});
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initDashboard);
 

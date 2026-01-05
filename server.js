@@ -10,7 +10,8 @@ const port = 3000;
 const db = new sqlite3.Database('database.sqlite');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('.'));
 
 // Generic handler helpers

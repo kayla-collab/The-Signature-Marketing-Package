@@ -98,7 +98,12 @@
                             </aside>
                             <div class="module-main">
                                 <div class="module-header">
-                                    <button onclick="showOverview()" class="btn btn-secondary btn-sm module-back">← Back to Overview</button>
+                                    <div class="module-header-top">
+                                        <button onclick="showOverview()" class="btn btn-secondary btn-sm module-back">← Back to Overview</button>
+                                        <button id="fullscreenToggle" class="btn btn-secondary btn-sm module-fullscreen" onclick="toggleFullscreen()">
+                                            <span class="icon-expand">⤢</span> Fullscreen
+                                        </button>
+                                    </div>
                                     <h1 id="moduleTitle" class="module-title">Module Title</h1>
                                     <p id="moduleDescription" class="module-subtitle">Module description</p>
                                 </div>
