@@ -422,15 +422,29 @@
                 iframe.style.height = '100vh';
                 iframe.style.border = 'none';
                 
-                if (!currentFile.allow_copy) {
-                    iframe.className = 'no-download';
-                    // Note: Copy protection in iframes is limited
-                }
-                
-                wrapper.appendChild(iframe);
-                
+                // Add event listener to resize iframe based on content when loaded
                 iframe.onload = () => {
                     document.getElementById('loadingScreen').style.display = 'none';
+                    try {
+                        // Try to access contentWindow (works for same-origin or data URLs)
+                        const doc = iframe.contentDocument || iframe.contentWindow.document;
+                        if (doc) {
+                            // Inject styles to ensure content fits nicely
+                            const style = doc.createElement('style');
+                            style.textContent = `
+                                body { margin: 0; overflow-x: hidden; }
+                                html { overflow-x: hidden; }
+                            `;
+                            doc.head.appendChild(style);
+                            
+                            // Adjust height if possible (optional, but good for fit)
+                            // const height = doc.body.scrollHeight;
+                            // iframe.style.height = height + 'px';
+                        }
+                    } catch(e) {
+                        // Cross-origin restriction might block access, ignore
+                        console.log("Cannot access iframe content for resizing: " + e.message);
+                    }
                 };
                 
                 iframe.onerror = () => {

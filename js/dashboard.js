@@ -161,7 +161,7 @@ async function checkBenchmarkCallDisplay(userId) {
         const now = Date.now();
         
         // Check if account is at least 3 months old
-        const accountAge = now - accountCreated;
+        const accountAge = now - new Date(accountCreated).getTime();
         if (accountAge < threeMonthsInMs) {
             return; // Account too new, don't show
         }
@@ -171,7 +171,16 @@ async function checkBenchmarkCallDisplay(userId) {
         const lastCallDate = localStorage.getItem(storageKey);
         
         // Show if never clicked, or if it's been 3 months since last click
-        const shouldShow = !lastCallDate || (now - parseInt(lastCallDate)) >= threeMonthsInMs;
+        let shouldShow = false;
+        
+        if (!lastCallDate) {
+            shouldShow = true;
+        } else {
+            const timeSinceLastCall = now - parseInt(lastCallDate);
+            if (timeSinceLastCall >= threeMonthsInMs) {
+                shouldShow = true;
+            }
+        }
         
         if (shouldShow) {
             // Show as popup instead of inline
