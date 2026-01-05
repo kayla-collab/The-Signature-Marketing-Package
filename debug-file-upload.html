@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug File Upload</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div class="spinner-text">Loading File Manager</div>
+        <div class="spinner-subtext">Please wait...</div>
+    </div>
+
+    <div class="admin-container">
+        <div class="main-content">
+            <h1>Debug File Upload Page</h1>
+            <div id="debug-info"></div>
+            
+            <div class="card" style="margin-top: 30px;">
+                <h2>Uploaded Files</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Type</th>
+                                <th>Uploaded</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesList">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 30px;">
+                                    Loading files...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        let currentFiles = [];
+        const debugDiv = document.getElementById('debug-info');
+        
+        function log(message) {
+            console.log(message);
+            debugDiv.innerHTML += `<p>${message}</p>`;
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-screen').style.display = 'none';
+        }
+        
+        async function loadFiles() {
+            try {
+                log('📡 Fetching files from API...');
+                const response = await fetch('tables/uploaded_files?limit=100');
+                log(`📊 Response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                log(`✅ Received ${result.data.length} files`);
+                currentFiles = result.data || [];
+                renderFilesList();
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                console.error('Error loading files:', error);
+                const tbody = document.getElementById('filesList');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 30px; color: #d9534f;">
+                            Error loading files: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function renderFilesList() {
+            const tbody = document.getElementById('filesList');
+            
+            if (currentFiles.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 30px; color: #999;">
+                            No files uploaded yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = currentFiles.map(file => `
+                <tr>
+                    <td>${file.file_name}</td>
+                    <td><span class="badge">${file.file_type.toUpperCase()}</span></td>
+                    <td>${new Date(file.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                log('🔐 Checking authentication...');
+                const session = auth.getSession();
+                
+                if (!session) {
+                    log('❌ No session found');
+                    log('🔄 Would redirect to index.html');
+                    hideLoading();
+                    return;
+                }
+                
+                log(`✅ Session found: ${session.email} (${session.role})`);
+                
+                if (session.role !== 'admin') {
+                    log('❌ Not an admin user');
+                    log('🔄 Would redirect to dashboard.html');
+                    hideLoading();
+                    return;
+                }
+                
+                log('✅ Admin user confirmed');
+                log('📦 Loading files...');
+                await loadFiles();
+                log('✅ Page initialization complete');
+            } catch (error) {
+                log(`❌ Initialization error: ${error.message}`);
+                console.error('Error initializing page:', error);
+            } finally {
+                hideLoading();
+            }
+        });
+    </script>
+</body>
+</html>

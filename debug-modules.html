@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Modules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Module API Diagnostics</h1>
+        
+        <div class="test-section">
+            <h2>1. Check Existing Modules</h2>
+            <button onclick="listModules()">List All Modules</button>
+            <pre id="modules-list"></pre>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Test Create Module (Minimal Data)</h2>
+            <button onclick="testCreateMinimal()">Create Minimal Module</button>
+            <pre id="create-minimal-result"></pre>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Test Create Module (Full Data)</h2>
+            <button onclick="testCreateFull()">Create Full Module</button>
+            <pre id="create-full-result"></pre>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Test Update Module</h2>
+            <input type="text" id="update-module-id" placeholder="Enter Module ID">
+            <button onclick="testUpdate()">Update Module</button>
+            <pre id="update-result"></pre>
+        </div>
+    </div>
+
+    <script>
+        async function listModules() {
+            const output = document.getElementById('modules-list');
+            output.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('tables/modules?limit=100');
+                const data = await response.json();
+                output.innerHTML = `<span class="success">✓ Found ${data.data.length} modules</span>\n\n` + 
+                    JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        async function testCreateMinimal() {
+            const output = document.getElementById('create-minimal-result');
+            output.textContent = 'Creating...';
+            
+            const testData = {
+                title: "Test Module - " + new Date().getTime(),
+                description: "Test description",
+                order_index: 99,
+                icon: "📝"
+            };
+            
+            output.textContent = 'Sending: ' + JSON.stringify(testData, null, 2) + '\n\n';
+            
+            try {
+                const response = await fetch('tables/modules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData)
+                });
+                
+                output.textContent += `Response Status: ${response.status} ${response.statusText}\n\n`;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    output.innerHTML += `<span class="error">✗ Error Response:\n${errorText}</span>`;
+                    return;
+                }
+                
+                const result = await response.json();
+                output.innerHTML += `<span class="success">✓ Success!</span>\n\n` + JSON.stringify(result, null, 2);
+            } catch (error) {
+                output.innerHTML += `<span class="error">✗ Error: ${error.message}\n${error.stack}</span>`;
+            }
+        }
+
+        async function testCreateFull() {
+            const output = document.getElementById('create-full-result');
+            output.textContent = 'Creating...';
+            
+            const testData = {
+                title: "Full Test Module - " + new Date().getTime(),
+                description: "<p>This is a <strong>rich text</strong> description with <em>formatting</em></p>",
+                order_index: 100,
+                icon: "🎯"
+            };
+            
+            output.textContent = 'Sending: ' + JSON.stringify(testData, null, 2) + '\n\n';
+            
+            try {
+                const response = await fetch('tables/modules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData)
+                });
+                
+                output.textContent += `Response Status: ${response.status} ${response.statusText}\n\n`;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    output.innerHTML += `<span class="error">✗ Error Response:\n${errorText}</span>`;
+                    return;
+                }
+                
+                const result = await response.json();
+                output.innerHTML += `<span class="success">✓ Success!</span>\n\n` + JSON.stringify(result, null, 2);
+            } catch (error) {
+                output.innerHTML += `<span class="error">✗ Error: ${error.message}\n${error.stack}</span>`;
+            }
+        }
+
+        async function testUpdate() {
+            const moduleId = document.getElementById('update-module-id').value;
+            const output = document.getElementById('update-result');
+            
+            if (!moduleId) {
+                output.innerHTML = '<span class="error">Please enter a module ID</span>';
+                return;
+            }
+            
+            output.textContent = 'Updating...';
+            
+            const updateData = {
+                title: "Updated Module - " + new Date().getTime(),
+                description: "Updated description",
+                order_index: 1,
+                icon: "✏️"
+            };
+            
+            output.textContent = 'Sending: ' + JSON.stringify(updateData, null, 2) + '\n\n';
+            
+            try {
+                const response = await fetch(`tables/modules/${moduleId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                
+                output.textContent += `Response Status: ${response.status} ${response.statusText}\n\n`;
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    output.innerHTML += `<span class="error">✗ Error Response:\n${errorText}</span>`;
+                    return;
+                }
+                
+                const result = await response.json();
+                output.innerHTML += `<span class="success">✓ Success!</span>\n\n` + JSON.stringify(result, null, 2);
+            } catch (error) {
+                output.innerHTML += `<span class="error">✗ Error: ${error.message}\n${error.stack}</span>`;
+            }
+        }
+
+        // Auto-load modules on page load
+        window.addEventListener('DOMContentLoaded', listModules);
+    </script>
+</body>
+</html>

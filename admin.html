@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Signature Marketing Package</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=20241228e">
+    <script src="js/iframe-optimization.js?v=3"></script>
+</head>
+<body class="admin-page">
+    <div class="dashboard admin-dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Dashboard</h2>
+                <p class="user-name">Kayla Sierra</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#clients" class="nav-link active">Manage Clients</a></li>
+                    <li><a href="client-modules.html" class="nav-link-external">Client Modules</a></li>
+                    <li><a href="#modules" class="nav-link">Manage Modules</a></li>
+                    <li><a href="module-builder.html" class="nav-link-external">Module Builder</a></li>
+                    <li><a href="#content" class="nav-link">All Content</a></li>
+                    <li><a href="file-upload.html" class="nav-link-external">File Manager</a></li>
+                    <li><a href="welcome-messages.html" class="nav-link-external">Welcome Messages</a></li>
+                    <li><a href="#preview" class="nav-link">Preview as Client</a></li>
+                </ul>
+            </nav>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                <a href="dashboard.html" class="btn btn-secondary btn-sm" style="width: 100%; text-decoration: none; display: block; text-align: center; margin-bottom: 10px;">View as Client</a>
+                <button onclick="auth.logout()" class="btn btn-secondary btn-sm" style="width: 100%;">Logout</button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <!-- Clients Section -->
+            <section id="clients-section" class="content-view">
+                <div class="admin-header">
+                    <div>
+                        <h1>Client Management</h1>
+                        <p style="color: #666;">Add, edit, and manage client access</p>
+                    </div>
+                    <div class="admin-actions">
+                        <button onclick="openAddClientModal()" class="btn btn-primary">+ Add New Client</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Access Expires</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Loading clients</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Modules Section -->
+            <section id="modules-section" class="content-view hidden">
+                <div class="admin-header">
+                    <div>
+                        <h1>Module Management</h1>
+                        <p style="color: #666;">Create, edit, and manage module templates with content</p>
+                    </div>
+                    <div class="admin-actions">
+                        <button onclick="openAddModuleModal()" class="btn btn-primary">+ Create New Module</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module Name</th>
+                                <th>Description</th>
+                                <th>Content Items</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modulesTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Loading modules</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Content Section -->
+            <section id="content-section" class="content-view hidden">
+                <div class="admin-header">
+                    <div>
+                        <h1>Content Management</h1>
+                        <p style="color: #666;">Add and edit content for each module</p>
+                    </div>
+                    <div class="admin-actions">
+                        <select id="moduleFilter" class="form-control" onchange="filterContentByModule()" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-family: 'Open Sans', sans-serif;">
+                            <option value="">All Modules</option>
+                        </select>
+                        <button onclick="openAddContentModal()" class="btn btn-primary">+ Add Content Item</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Client</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contentTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Loading content</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Preview Section -->
+            <section id="preview-section" class="content-view hidden">
+                <div class="admin-header">
+                    <div>
+                        <h1>Preview as Client</h1>
+                        <p style="color: #666;">Select a client to preview their view</p>
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 30px; border-radius: 10px; border: 2px solid #e0e0e0;">
+                    <div class="form-group">
+                        <label for="previewClientSelect">Select Client:</label>
+                        <select id="previewClientSelect" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-family: 'Open Sans', sans-serif; width: 100%; max-width: 400px;">
+                            <option value="">Choose a client...</option>
+                        </select>
+                    </div>
+                    <button onclick="previewAsClient()" class="btn btn-primary" style="margin-top: 20px;">Preview Dashboard</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Add/Edit Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="clientModalTitle">Add New Client</h2>
+                <button class="close-modal" onclick="closeClientModal()">&times;</button>
+            </div>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientFullName">Full Name *</label>
+                        <input type="text" id="clientFullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientEmail">Email Address *</label>
+                        <input type="email" id="clientEmail" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientPassword">Password *</label>
+                        <input type="text" id="clientPassword" required placeholder="Set initial password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientAccessExpires">Access Expires (Optional)</label>
+                        <input type="date" id="clientAccessExpires">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="clientIsActive" checked>
+                        Account Active
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeClientModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Content Modal -->
+    <div id="contentModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 id="contentModalTitle">Add Content Item</h2>
+                <button class="close-modal" onclick="closeContentModal()">&times;</button>
+            </div>
+            <form id="contentForm">
+                <input type="hidden" id="contentId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contentModule">Module *</label>
+                        <select id="contentModule" required>
+                            <option value="">Select a module...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contentClient">Client (Optional)</label>
+                        <select id="contentClient">
+                            <option value="">Global (All Clients)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentTitle">Title *</label>
+                    <input type="text" id="contentTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentType">Content Type *</label>
+                    <select id="contentType" required onchange="updateContentFields()">
+                        <option value="text">Text/Rich Content</option>
+                        <option value="video">Video Embed</option>
+                        <option value="download">Downloadable File</option>
+                        <option value="embedded_file">Embedded File (View-Only)</option>
+                        <option value="link">External Link</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentBody">Description/Instructions</label>
+                    <textarea id="contentBody" rows="6" placeholder="Add explanations, context, or instructions for this content..."></textarea>
+                </div>
+                
+                <!-- Embedded File Selector (hidden by default) -->
+                <div class="form-group" id="embeddedFileSelector" style="display: none;">
+                    <label for="embeddedFileSelect">Select Embedded File *</label>
+                    <select id="embeddedFileSelect">
+                        <option value="">Choose a file...</option>
+                    </select>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                        Select an uploaded file to embed. Clients can view but not download unless enabled.
+                    </p>
+                </div>
+                
+                <div class="form-group" id="contentUrlGroup">
+                    <label for="contentUrl" id="contentUrlLabel">URL</label>
+                    <input type="url" id="contentUrl" placeholder="https://">
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;" id="contentUrlHint">
+                        For videos: Use embed URL (e.g., YouTube: https://www.youtube.com/embed/VIDEO_ID, Zoom: recording URL)
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contentOrder">Display Order</label>
+                    <input type="number" id="contentOrder" value="1" min="1">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeContentModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Content</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Module Modal -->
+    <div id="moduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="moduleModalTitle">Create New Module</h2>
+                <button class="close-modal" onclick="closeModuleModal()">&times;</button>
+            </div>
+            <form id="moduleForm">
+                <input type="hidden" id="moduleId">
+                
+                <div class="form-group">
+                    <label for="moduleName">Module Name *</label>
+                    <input type="text" id="moduleName" required placeholder="e.g., Cat Assets, Social Media Package">
+                </div>
+                
+                <div class="form-group">
+                    <label for="moduleDescription">Description *</label>
+                    <textarea id="moduleDescription" required rows="3" placeholder="Brief description of what this module contains"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="moduleOrder">Display Order</label>
+                    <input type="number" id="moduleOrder" value="1" min="1">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeModuleModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Module</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Duplicate Module Modal -->
+    <div id="duplicateModuleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Duplicate Module with Content</h2>
+                <button class="close-modal" onclick="closeDuplicateModuleModal()">&times;</button>
+            </div>
+            <div style="padding: 20px 0;">
+                <p style="margin-bottom: 20px; color: #666;">This will create a copy of "<strong id="duplicateModuleName"></strong>" including all its content items.</p>
+                
+                <div class="form-group">
+                    <label for="duplicateNewName">New Module Name *</label>
+                    <input type="text" id="duplicateNewName" required placeholder="Enter new name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duplicateNewDescription">New Description *</label>
+                    <textarea id="duplicateNewDescription" required rows="3"></textarea>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;"><strong>What will be copied:</strong></p>
+                    <ul style="margin-left: 20px; font-size: 14px; color: #666;">
+                        <li>All text content blocks</li>
+                        <li>All video embeds</li>
+                        <li>All download links</li>
+                        <li>All external links</li>
+                    </ul>
+                </div>
+                
+                <div class="form-actions" style="margin-top: 25px;">
+                    <button type="button" onclick="closeDuplicateModuleModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="button" onclick="executeDuplicate()" class="btn btn-primary">Duplicate Module</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="legal-footer">
+        <p>&copy; <span id="currentYear"></span> Kayla Sierra Consulting. All Rights Reserved.</p>
+    </footer>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay show">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading admin panel</div>
+        <div class="loading-subtext">Please wait...</div>
+    </div>
+    
+    <script src="js/auth.js?v=20241228"></script>
+    <script src="js/admin.js"></script>
+    <script>
+        // Initialize admin panel
+        initAdmin();
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

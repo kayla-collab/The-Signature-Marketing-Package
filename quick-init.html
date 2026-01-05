@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Database Setup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .init-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .btn {
+            background: #db8a70;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #c77959;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(219, 138, 112, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        .status.show { display: block; }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
+        }
+        .log.show { display: block; }
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .log-item:last-child { border-bottom: none; }
+        .credentials {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            display: none;
+        }
+        .credentials.show { display: block; }
+        .credentials h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .cred-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .cred-label {
+            font-weight: 600;
+            color: #856404;
+        }
+        .cred-value {
+            color: #333;
+            font-family: monospace;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .login-btn {
+            margin-top: 15px;
+            background: #28a745;
+        }
+        .login-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="init-card">
+        <h1>🚀 Quick Database Setup</h1>
+        <p class="subtitle">Initialize your database with admin user and default modules</p>
+        
+        <button class="btn" id="initBtn" onclick="initializeDatabase()">
+            Initialize Database Now
+        </button>
+        
+        <div class="status" id="status"></div>
+        <div class="log" id="log"></div>
+        
+        <div class="credentials" id="credentials">
+            <h3>✅ Setup Complete!</h3>
+            <div class="cred-item">
+                <span class="cred-label">Email:</span>
+                <span class="cred-value">kayla@kaylasierra.com</span>
+            </div>
+            <div class="cred-item">
+                <span class="cred-label">Password:</span>
+                <span class="cred-value">admin123</span>
+            </div>
+            <button class="btn login-btn" onclick="window.location.href='index.html'">
+                Go to Login Page
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            log.classList.add('show');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⏳';
+            item.textContent = `${icon} ${message}`;
+            log.appendChild(item);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type} show`;
+        }
+
+        async function initializeDatabase() {
+            const btn = document.getElementById('initBtn');
+            btn.disabled = true;
+            btn.textContent = 'Initializing...';
+            
+            try {
+                addLog('Starting database initialization...', 'info');
+                
+                // Create admin user
+                addLog('Creating admin user...', 'info');
+                const adminResponse = await fetch('tables/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'kayla@kaylasierra.com',
+                        password_hash: 'admin123',
+                        full_name: 'Kayla Sierra',
+                        role: 'admin',
+                        is_active: true,
+                        access_expires: null
+                    })
+                });
+                
+                if (!adminResponse.ok) {
+                    const errorText = await adminResponse.text();
+                    throw new Error(`Failed to create admin: ${errorText}`);
+                }
+                
+                addLog('Admin user created successfully', 'success');
+                
+                // Create default modules
+                addLog('Creating default modules...', 'info');
+                const modules = [
+                    { 
+                        title: 'YouTube Content Strategy', 
+                        description: 'Complete YouTube execution assets including video scripts, posting calendar, optimization checklists, and analytics guides',
+                        order_index: 1, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Instagram Marketing', 
+                        description: 'Instagram execution assets with posting calendar, carousel templates, caption library, and engagement strategies',
+                        order_index: 2, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'LinkedIn Networking', 
+                        description: 'LinkedIn sponsorship assets including outreach sequences, pitch templates, and partnership strategies',
+                        order_index: 3, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Campus Partnerships', 
+                        description: 'Campus club partnership assets with outreach templates, workshop materials, and follow-up sequences',
+                        order_index: 4, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Affiliate Marketing', 
+                        description: 'Complete affiliate program guide with recruitment templates, onboarding packages, and tracking systems',
+                        order_index: 5, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Branding & Design', 
+                        description: 'Branding and design assets including color palettes, Canva templates, and social media graphics',
+                        order_index: 6, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Strategy & Operations', 
+                        description: 'Strategy and operations resources with implementation timelines, decision frameworks, and planning templates',
+                        order_index: 7, 
+                        icon: '' 
+                    },
+                    { 
+                        title: 'Personal Consultation', 
+                        description: 'One-on-one coaching access with strategy calls and email support',
+                        order_index: 8, 
+                        icon: '' 
+                    }
+                ];
+                
+                for (const module of modules) {
+                    await fetch('tables/modules', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(module)
+                    });
+                    addLog(`Created module: ${module.title}`, 'success');
+                }
+                
+                addLog('All modules created successfully', 'success');
+                
+                showStatus('✅ Database initialized successfully!', 'success');
+                document.getElementById('credentials').classList.add('show');
+                btn.textContent = '✅ Initialization Complete';
+                
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showStatus(`❌ Error: ${error.message}`, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Retry Initialization';
+            }
+        }
+    </script>
+</body>
+</html>

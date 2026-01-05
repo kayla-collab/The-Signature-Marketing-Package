@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Export Tool - TSMP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px);
+            color: #fff;
+            font-size: clamp(16px, 1.1vw + 14px, 20px);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 14px;
+            font-size: clamp(28px, 4vw, 42px);
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: clamp(17px, 1.9vw, 22px);
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: clamp(24px, 4vw, 40px);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card h2 {
+            margin-bottom: 24px;
+            color: #4ade80;
+            font-size: clamp(20px, 2.5vw, 28px);
+        }
+        .warning {
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid #fbbf24;
+            color: #fef3c7;
+            padding: clamp(16px, 2vw, 24px);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.7;
+        }
+        .btn {
+            padding: clamp(14px, 2vw, 20px) clamp(24px, 3vw, 36px);
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(16px, 1.8vw, 20px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: #000;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .progress-section {
+            margin-top: 20px;
+        }
+        .progress-item {
+            display: flex;
+            align-items: center;
+            padding: clamp(14px, 2vw, 18px) 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: clamp(15px, 1.7vw, 19px);
+        }
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+        .progress-icon {
+            width: 36px;
+            font-size: clamp(20px, 2.2vw, 26px);
+        }
+        .progress-name {
+            flex: 1;
+        }
+        .progress-count {
+            color: #4ade80;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+        .progress-status {
+            width: 28px;
+            height: 28px;
+            margin-left: 12px;
+        }
+        .status-pending { color: #666; }
+        .status-loading { color: #fbbf24; animation: spin 1s linear infinite; }
+        .status-done { color: #4ade80; }
+        .status-error { color: #ef4444; }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .export-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            display: none;
+        }
+        .export-result.show {
+            display: block;
+        }
+        .export-result textarea {
+            width: 100%;
+            height: 180px;
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            padding: clamp(14px, 2vw, 20px);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: clamp(13px, 1.4vw, 16px);
+            resize: vertical;
+            margin-bottom: 18px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .summary {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .summary h3 {
+            color: #4ade80;
+            margin-bottom: 14px;
+            font-size: clamp(18px, 2.2vw, 24px);
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+        }
+        .summary-item {
+            background: rgba(0,0,0,0.2);
+            padding: clamp(12px, 1.8vw, 18px);
+            border-radius: 10px;
+        }
+        .summary-item .label {
+            font-size: clamp(13px, 1.4vw, 16px);
+            color: #aaa;
+        }
+        .summary-item .value {
+            font-size: clamp(22px, 2.5vw, 30px);
+            font-weight: 700;
+            color: #4ade80;
+        }
+        .instructions {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            padding: clamp(20px, 3vw, 32px);
+            margin-bottom: 24px;
+        }
+        .instructions h3 {
+            color: #60a5fa;
+            margin-bottom: 14px;
+            font-size: clamp(18px, 2.2vw, 24px);
+        }
+        .instructions ol {
+            margin-left: 24px;
+            line-height: 1.9;
+            font-size: clamp(15px, 1.7vw, 19px);
+        }
+        .instructions code {
+            background: rgba(0,0,0,0.3);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: clamp(14px, 1.5vw, 17px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Data Export Tool</h1>
+        <p class="subtitle">Export all your data from this deployment</p>
+        
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li>Run this tool on your <strong>OLD domain</strong> (where your data exists)</li>
+                <li>Click "Start Export" to gather all data</li>
+                <li>Click "Download Export File" to save the JSON file</li>
+                <li>Go to your <strong>NEW domain</strong> and open <code>data-import.html</code></li>
+                <li>Upload the exported file to restore all your data</li>
+            </ol>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Data Tables to Export</h2>
+            
+            <div class="progress-section" id="progressSection">
+                <div class="progress-item" data-table="users">
+                    <span class="progress-icon">👤</span>
+                    <span class="progress-name">Users (Admin & Clients)</span>
+                    <span class="progress-count" id="count-users">-</span>
+                    <span class="progress-status status-pending" id="status-users">○</span>
+                </div>
+                <div class="progress-item" data-table="modules">
+                    <span class="progress-icon">📚</span>
+                    <span class="progress-name">Modules</span>
+                    <span class="progress-count" id="count-modules">-</span>
+                    <span class="progress-status status-pending" id="status-modules">○</span>
+                </div>
+                <div class="progress-item" data-table="content_items">
+                    <span class="progress-icon">📝</span>
+                    <span class="progress-name">Content Items</span>
+                    <span class="progress-count" id="count-content_items">-</span>
+                    <span class="progress-status status-pending" id="status-content_items">○</span>
+                </div>
+                <div class="progress-item" data-table="uploaded_files">
+                    <span class="progress-icon">📁</span>
+                    <span class="progress-name">Uploaded Files (metadata)</span>
+                    <span class="progress-count" id="count-uploaded_files">-</span>
+                    <span class="progress-status status-pending" id="status-uploaded_files">○</span>
+                </div>
+                <div class="progress-item" data-table="progress">
+                    <span class="progress-icon">📈</span>
+                    <span class="progress-name">User Progress</span>
+                    <span class="progress-count" id="count-progress">-</span>
+                    <span class="progress-status status-pending" id="status-progress">○</span>
+                </div>
+                <div class="progress-item" data-table="client_modules">
+                    <span class="progress-icon">🔗</span>
+                    <span class="progress-name">Client Module Assignments</span>
+                    <span class="progress-count" id="count-client_modules">-</span>
+                    <span class="progress-status status-pending" id="status-client_modules">○</span>
+                </div>
+                <div class="progress-item" data-table="client_greetings">
+                    <span class="progress-icon">👋</span>
+                    <span class="progress-name">Custom Welcome Messages</span>
+                    <span class="progress-count" id="count-client_greetings">-</span>
+                    <span class="progress-status status-pending" id="status-client_greetings">○</span>
+                </div>
+                <div class="progress-item" data-table="global_welcome_message">
+                    <span class="progress-icon">🌍</span>
+                    <span class="progress-name">Global Welcome Message</span>
+                    <span class="progress-count" id="count-global_welcome_message">-</span>
+                    <span class="progress-status status-pending" id="status-global_welcome_message">○</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button class="btn btn-primary" id="exportBtn" onclick="startExport()">
+                    🚀 Start Export
+                </button>
+            </div>
+            
+            <div class="summary" id="summary" style="display: none;">
+                <h3>✅ Export Complete!</h3>
+                <div class="summary-grid" id="summaryGrid"></div>
+            </div>
+            
+            <div class="export-result" id="exportResult">
+                <h3 style="margin-bottom: 15px;">📄 Export Data</h3>
+                <textarea id="exportData" readonly></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="downloadExport()">
+                        ⬇️ Download Export File
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyExport()">
+                        📋 Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Important Notes:</strong><br>
+            • This exports <strong>metadata</strong> for uploaded files, not the actual file binary data<br>
+            • If files are stored externally (URLs), they will continue to work<br>
+            • User passwords are exported as-is (plain text as stored)<br>
+            • Run this on your OLD domain before migrating
+        </div>
+    </div>
+    
+    <script>
+        // Tables to export
+        const TABLES = [
+            'users',
+            'modules', 
+            'content_items',
+            'uploaded_files',
+            'progress',
+            'client_modules',
+            'client_greetings',
+            'global_welcome_message'
+        ];
+        
+        let exportData = null;
+        
+        // Update status icon
+        function setStatus(table, status) {
+            const el = document.getElementById(`status-${table}`);
+            el.className = `progress-status status-${status}`;
+            switch(status) {
+                case 'pending': el.textContent = '○'; break;
+                case 'loading': el.textContent = '↻'; break;
+                case 'done': el.textContent = '✓'; break;
+                case 'error': el.textContent = '✗'; break;
+            }
+        }
+        
+        // Update count
+        function setCount(table, count) {
+            document.getElementById(`count-${table}`).textContent = count;
+        }
+        
+        // Fetch all records from a table (handling pagination)
+        async function fetchAllRecords(tableName) {
+            let allRecords = [];
+            let page = 1;
+            const limit = 100;
+            let hasMore = true;
+            
+            while (hasMore) {
+                try {
+                    const response = await fetch(`tables/${tableName}?page=${page}&limit=${limit}`);
+                    
+                    if (!response.ok) {
+                        // Table might not exist, return empty
+                        console.log(`Table ${tableName} returned ${response.status}`);
+                        return [];
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.data && data.data.length > 0) {
+                        allRecords = allRecords.concat(data.data);
+                        
+                        // Check if there are more pages
+                        if (data.data.length < limit) {
+                            hasMore = false;
+                        } else {
+                            page++;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching ${tableName}:`, error);
+                    hasMore = false;
+                }
+            }
+            
+            return allRecords;
+        }
+        
+        // Start export process
+        async function startExport() {
+            const btn = document.getElementById('exportBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Exporting...';
+            
+            exportData = {
+                version: '1.0',
+                exportedAt: new Date().toISOString(),
+                source: window.location.hostname,
+                tables: {}
+            };
+            
+            let totalRecords = 0;
+            
+            // Clean record - remove internal fields that cause import issues
+            function cleanRecord(record) {
+                const clean = { ...record };
+                // Remove internal/system fields
+                delete clean._rid;
+                delete clean._v;
+                delete clean.__v;
+                delete clean.gs_project_id;
+                delete clean.gs_table_name;
+                delete clean.deleted;
+                // Remove any field starting with underscore
+                for (const key of Object.keys(clean)) {
+                    if (key.startsWith('_')) {
+                        delete clean[key];
+                    }
+                }
+                return clean;
+            }
+            
+            // Export each table
+            for (const table of TABLES) {
+                setStatus(table, 'loading');
+                
+                try {
+                    const records = await fetchAllRecords(table);
+                    // Clean each record before storing
+                    exportData.tables[table] = records.map(cleanRecord);
+                    
+                    setCount(table, records.length);
+                    setStatus(table, 'done');
+                    totalRecords += records.length;
+                    
+                    console.log(`✅ Exported ${table}: ${records.length} records`);
+                } catch (error) {
+                    console.error(`❌ Error exporting ${table}:`, error);
+                    setStatus(table, 'error');
+                    setCount(table, 'Error');
+                }
+                
+                // Small delay between requests
+                await new Promise(r => setTimeout(r, 100));
+            }
+            
+            // Show summary
+            const summary = document.getElementById('summary');
+            const summaryGrid = document.getElementById('summaryGrid');
+            summaryGrid.innerHTML = '';
+            
+            for (const table of TABLES) {
+                const count = exportData.tables[table]?.length || 0;
+                summaryGrid.innerHTML += `
+                    <div class="summary-item">
+                        <div class="label">${table.replace(/_/g, ' ')}</div>
+                        <div class="value">${count}</div>
+                    </div>
+                `;
+            }
+            
+            summaryGrid.innerHTML += `
+                <div class="summary-item" style="background: rgba(74, 222, 128, 0.2);">
+                    <div class="label">Total Records</div>
+                    <div class="value">${totalRecords}</div>
+                </div>
+            `;
+            
+            summary.style.display = 'block';
+            
+            // Show export data
+            const exportResult = document.getElementById('exportResult');
+            const exportTextarea = document.getElementById('exportData');
+            exportTextarea.value = JSON.stringify(exportData, null, 2);
+            exportResult.classList.add('show');
+            
+            btn.textContent = '✅ Export Complete!';
+            btn.disabled = false;
+        }
+        
+        // Download export as JSON file
+        function downloadExport() {
+            if (!exportData) {
+                alert('No export data available. Run export first.');
+                return;
+            }
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tsmp-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Copy to clipboard
+        async function copyExport() {
+            const textarea = document.getElementById('exportData');
+            try {
+                await navigator.clipboard.writeText(textarea.value);
+                alert('✅ Export data copied to clipboard!');
+            } catch (err) {
+                textarea.select();
+                document.execCommand('copy');
+                alert('✅ Export data copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>

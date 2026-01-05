@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Setup - Initialize Database</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #fdf9f7 0%, #fff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(20px, 4vw, 40px);
+            font-size: clamp(16px, 1.1vw + 14px, 20px);
+        }
+        .setup-card {
+            background: white;
+            padding: clamp(32px, 5vw, 56px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 580px;
+            width: 100%;
+        }
+        h1 {
+            color: #2d2d2d;
+            margin-bottom: 14px;
+            font-size: clamp(26px, 3.5vw, 36px);
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.7;
+            font-size: clamp(16px, 1.8vw, 20px);
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: clamp(16px, 1.7vw, 19px);
+        }
+        input {
+            width: 100%;
+            padding: clamp(14px, 2vw, 18px) clamp(16px, 2vw, 22px);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: clamp(16px, 1.8vw, 20px);
+            font-family: inherit;
+        }
+        input:focus {
+            outline: none;
+            border-color: #db8a70;
+        }
+        .btn {
+            width: 100%;
+            padding: clamp(16px, 2.2vw, 22px);
+            background: linear-gradient(135deg, #db8a70, #c77959);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(17px, 1.9vw, 21px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(219,138,112,0.3);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            margin-top: 24px;
+            padding: clamp(16px, 2vw, 22px);
+            border-radius: 12px;
+            display: none;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.7;
+        }
+        .status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            display: block;
+            background: #e7f3ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: clamp(16px, 2vw, 22px);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.6;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: clamp(16px, 1.7vw, 19px);
+        }
+        .login-link a {
+            color: #db8a70;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        small {
+            font-size: clamp(13px, 1.4vw, 16px);
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-card">
+        <h1>🚀 Quick Setup</h1>
+        <p class="subtitle">Create your admin account to get started with The Signature Marketing Package.</p>
+        
+        <div class="warning">
+            ⚠️ <strong>First-time setup only!</strong> This page creates your initial admin account. Delete or rename this file after setup for security.
+        </div>
+        
+        <form id="setupForm">
+            <div class="form-group">
+                <label for="fullName">Your Full Name</label>
+                <input type="text" id="fullName" placeholder="Kayla Sierra" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="kayla@kaylasierra.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="text" id="password" placeholder="Choose a secure password" required>
+                <small>You'll use this to log in. Make it memorable!</small>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">Create Admin Account</button>
+        </form>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="login-link">
+            <a href="index.html">← Back to Login</a>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('status');
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            btn.disabled = true;
+            btn.textContent = 'Setting up...';
+            status.className = 'status info';
+            status.textContent = 'Creating your account...';
+            
+            try {
+                // Check if users already exist
+                const checkResponse = await fetch('tables/users?limit=1');
+                const checkData = await checkResponse.json();
+                
+                if (checkData.data && checkData.data.length > 0) {
+                    status.className = 'status error';
+                    status.textContent = '⚠️ Users already exist! Go to login page to sign in. If you forgot your password, contact support.';
+                    btn.disabled = false;
+                    btn.textContent = 'Create Admin Account';
+                    return;
+                }
+                
+                // Create admin user
+                const userResponse = await fetch('tables/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        password_hash: password,
+                        role: 'admin',
+                        is_active: true,
+                        access_expires: null
+                    })
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error('Failed to create user');
+                }
+                
+                const user = await userResponse.json();
+                console.log('Admin created:', user);
+                
+                // Create a sample module so dashboard isn't empty
+                status.textContent = 'Creating sample module...';
+                
+                await fetch('tables/modules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'Welcome Module',
+                        description: 'Your first module - edit or delete this from the admin panel.',
+                        order_index: 1,
+                        icon: '👋'
+                    })
+                });
+                
+                status.className = 'status success';
+                status.innerHTML = `
+                    <strong>✅ Setup Complete!</strong><br><br>
+                    Your admin account has been created:<br>
+                    <strong>Email:</strong> ${email}<br>
+                    <strong>Password:</strong> ${password}<br><br>
+                    <a href="index.html" style="color: #155724; font-weight: 600;">→ Go to Login</a>
+                `;
+                
+                btn.textContent = 'Setup Complete!';
+                
+            } catch (error) {
+                console.error('Setup error:', error);
+                status.className = 'status error';
+                status.textContent = '❌ Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Create Admin Account';
+            }
+        });
+    </script>
+</body>
+</html>

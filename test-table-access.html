@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Table Access</title>
+</head>
+<body>
+    <h1>Testing uploaded_files Table Access</h1>
+    <div id="results"></div>
+
+    <script>
+        async function testTableAccess() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                console.log('Attempting to fetch from tables/uploaded_files...');
+                const response = await fetch('tables/uploaded_files?limit=10');
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data received:', data);
+                
+                resultsDiv.innerHTML = `
+                    <h2>✅ Success!</h2>
+                    <p><strong>Total records:</strong> ${data.total || 0}</p>
+                    <p><strong>Data length:</strong> ${data.data ? data.data.length : 0}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `
+                    <h2>❌ Error</h2>
+                    <p><strong>Message:</strong> ${error.message}</p>
+                    <p><strong>Stack:</strong></p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+        
+        // Run test on page load
+        testTableAccess();
+    </script>
+</body>
+</html>

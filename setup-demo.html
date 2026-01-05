@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Setup - Signature Marketing Package</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .setup-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .setup-log {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-success {
+            color: #28a745;
+        }
+        
+        .log-error {
+            color: #dc3545;
+        }
+        
+        .log-info {
+            color: #666;
+        }
+        
+        .credentials-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #4caf50;
+        }
+        
+        .credentials-box h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        
+        .credential-item {
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .credential-label {
+            font-weight: 600;
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <h1 style="margin-bottom: 10px;">Demo Setup</h1>
+        <p style="color: #666; margin-bottom: 30px;">This will create a demo client with sample content for testing.</p>
+        
+        <button id="setupBtn" onclick="runSetup()" class="btn btn-primary" style="width: 100%;">
+            Setup Demo Client & Content
+        </button>
+        
+        <div id="setupLog" class="setup-log" style="display: none;">
+            <div id="logContent"></div>
+        </div>
+        
+        <div id="credentialsBox" class="credentials-box" style="display: none;">
+            <h3>✅ Demo Setup Complete!</h3>
+            
+            <div class="credential-item">
+                <span class="credential-label">Email:</span>
+                <strong>demo@example.com</strong>
+            </div>
+            
+            <div class="credential-item">
+                <span class="credential-label">Password:</span>
+                <strong>demo123</strong>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <a href="index.html" class="btn btn-primary" style="text-decoration: none;">
+                    Go to Login Page
+                </a>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+            <p style="font-size: 14px; color: #666;">
+                <strong>Note:</strong> The demo client will have access to 3 sample modules with example content.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const logItem = document.createElement('div');
+            logItem.className = `log-item log-${type}`;
+            logItem.textContent = message;
+            logContent.appendChild(logItem);
+            
+            // Scroll to bottom
+            const setupLog = document.getElementById('setupLog');
+            setupLog.scrollTop = setupLog.scrollHeight;
+        }
+        
+        async function runSetup() {
+            const setupBtn = document.getElementById('setupBtn');
+            const setupLog = document.getElementById('setupLog');
+            const credentialsBox = document.getElementById('credentialsBox');
+            const logContent = document.getElementById('logContent');
+            
+            // Reset
+            logContent.innerHTML = '';
+            setupLog.style.display = 'block';
+            credentialsBox.style.display = 'none';
+            setupBtn.disabled = true;
+            setupBtn.textContent = 'Setting up...';
+            
+            try {
+                log('🚀 Starting demo setup...', 'info');
+                
+                // Check if demo client already exists
+                log('Checking for existing demo client...', 'info');
+                const usersResponse = await fetch('tables/users?limit=100');
+                const usersData = await usersResponse.json();
+                let demoClient = usersData.data.find(u => u.email === 'demo@example.com');
+                
+                if (demoClient) {
+                    log('✓ Demo client already exists', 'success');
+                } else {
+                    log('Creating demo client...', 'info');
+                    const createResponse = await fetch('tables/users', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            email: 'demo@example.com',
+                            full_name: 'Demo Client',
+                            password_hash: 'demo123',
+                            role: 'client',
+                            is_active: true,
+                            access_expires: null
+                        })
+                    });
+                    demoClient = await createResponse.json();
+                    log('✓ Demo client created', 'success');
+                }
+                
+                // Get modules
+                log('Loading modules...', 'info');
+                const modulesResponse = await fetch('tables/modules?limit=100');
+                const modulesData = await modulesResponse.json();
+                const modules = modulesData.data;
+                
+                if (modules.length === 0) {
+                    log('⚠ No modules found - using default 8 modules', 'info');
+                }
+                
+                // Find key modules
+                const youtubeModule = modules.find(m => m.title.includes('YouTube'));
+                const instagramModule = modules.find(m => m.title.includes('Instagram'));
+                const strategyModule = modules.find(m => m.title.includes('Strategy'));
+                
+                log(`Found ${modules.length} total modules`, 'info');
+                
+                // Add sample content to YouTube module
+                if (youtubeModule) {
+                    log('Adding sample content to YouTube module...', 'info');
+                    
+                    const youtubeContent = [
+                        {
+                            module_id: youtubeModule.id,
+                            client_id: '',
+                            title: 'Getting Started with YouTube',
+                            content_type: 'text',
+                            content_body: '<p>Welcome to your YouTube Execution Assets! This module contains everything you need to create compelling video content.</p><p><strong>What is included:</strong></p><ul><li>30-day content calendar</li><li>Video scripts</li><li>ChatGPT prompts</li><li>SEO checklist</li></ul>',
+                            content_url: '',
+                            order_index: 1
+                        },
+                        {
+                            module_id: youtubeModule.id,
+                            client_id: '',
+                            title: 'YouTube SEO Optimization Guide',
+                            content_type: 'download',
+                            content_body: '<p>Download this comprehensive guide for optimizing your videos for maximum reach and engagement.</p>',
+                            content_url: 'https://example.com/youtube-guide.pdf',
+                            order_index: 2
+                        },
+                        {
+                            module_id: youtubeModule.id,
+                            client_id: '',
+                            title: 'Video Strategy Tutorial',
+                            content_type: 'video',
+                            content_body: '<p>Watch this tutorial to learn the complete workflow from ideation to publishing.</p>',
+                            content_url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                            order_index: 3
+                        },
+                        {
+                            module_id: youtubeModule.id,
+                            client_id: '',
+                            title: 'ChatGPT Prompts Collection',
+                            content_type: 'download',
+                            content_body: '<p>Access 20+ proven ChatGPT prompts for generating video ideas, titles, hooks, and outlines.</p>',
+                            content_url: 'https://example.com/chatgpt-prompts.pdf',
+                            order_index: 4
+                        }
+                    ];
+                    
+                    for (const content of youtubeContent) {
+                        await fetch('tables/content_items', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(content)
+                        });
+                    }
+                    
+                    log('✓ Added 4 content items to YouTube module', 'success');
+                }
+                
+                // Add sample content to Instagram module
+                if (instagramModule) {
+                    log('Adding sample content to Instagram module...', 'info');
+                    
+                    const instagramContent = [
+                        {
+                            module_id: instagramModule.id,
+                            client_id: '',
+                            title: 'Instagram Content Calendar',
+                            content_type: 'download',
+                            content_body: '<p>Your 30-day Instagram posting calendar with captions and post ideas ready to use.</p>',
+                            content_url: 'https://example.com/instagram-calendar.pdf',
+                            order_index: 1
+                        },
+                        {
+                            module_id: instagramModule.id,
+                            client_id: '',
+                            title: 'Carousel Template Guide',
+                            content_type: 'text',
+                            content_body: '<p>10 ready-to-use carousel templates. Just fill in your content and post!</p><p><strong>Templates include:</strong></p><ul><li>Tips and Tricks format</li><li>Before and After</li><li>Step-by-step guides</li><li>Myth vs Reality</li></ul>',
+                            content_url: '',
+                            order_index: 2
+                        },
+                        {
+                            module_id: instagramModule.id,
+                            client_id: '',
+                            title: 'Engagement Playbook',
+                            content_type: 'link',
+                            content_body: '<p>Access our complete guide to maximizing engagement on Instagram.</p>',
+                            content_url: 'https://example.com/engagement-guide',
+                            order_index: 3
+                        }
+                    ];
+                    
+                    for (const content of instagramContent) {
+                        await fetch('tables/content_items', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(content)
+                        });
+                    }
+                    
+                    log('✓ Added 3 content items to Instagram module', 'success');
+                }
+                
+                // Assign modules to demo client
+                log('Assigning modules to demo client...', 'info');
+                
+                const modulesToAssign = [];
+                if (youtubeModule) modulesToAssign.push(youtubeModule.id);
+                if (instagramModule) modulesToAssign.push(instagramModule.id);
+                if (strategyModule) modulesToAssign.push(strategyModule.id);
+                
+                // Clear existing assignments first
+                const assignmentsResponse = await fetch('tables/client_modules?limit=1000');
+                const assignmentsData = await assignmentsResponse.json();
+                const existingAssignments = assignmentsData.data.filter(a => a.client_id === demoClient.id);
+                
+                for (const assignment of existingAssignments) {
+                    await fetch(`tables/client_modules/${assignment.id}`, {
+                        method: 'DELETE'
+                    });
+                }
+                
+                // Create new assignments
+                for (const moduleId of modulesToAssign) {
+                    await fetch('tables/client_modules', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            client_id: demoClient.id,
+                            module_id: moduleId,
+                            is_enabled: true
+                        })
+                    });
+                }
+                
+                log(`✓ Assigned ${modulesToAssign.length} modules to demo client`, 'success');
+                
+                log('', 'info');
+                log('✅ DEMO SETUP COMPLETE!', 'success');
+                
+                // Show credentials
+                credentialsBox.style.display = 'block';
+                
+            } catch (error) {
+                log('❌ Error during setup: ' + error.message, 'error');
+                setupBtn.disabled = false;
+                setupBtn.textContent = 'Retry Setup';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug File Upload</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>File Upload Debug Test</h1>
+    <div id="log" style="background: #f5f5f5; padding: 20px; margin: 20px; font-family: monospace; white-space: pre-wrap;"></div>
+    
+    <div style="padding: 20px;">
+        <h2>Test File Input</h2>
+        <input type="file" id="testFileInput" accept=".html,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+        <div id="fileInfo" style="margin-top: 10px;"></div>
+    </div>
+
+    <script src="js/auth.js?v=20241228"></script>
+    <script>
+        const logDiv = document.getElementById('log');
+        function log(msg) {
+            console.log(msg);
+            logDiv.textContent += msg + '\n';
+        }
+        
+        log('=== STARTING DEBUG ===');
+        log('Page loaded at: ' + new Date().toLocaleTimeString());
+        
+        // Check if auth is available
+        log('Auth object exists: ' + (typeof auth !== 'undefined'));
+        
+        // Test file input
+        const fileInput = document.getElementById('testFileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        log('File input element found: ' + (fileInput !== null));
+        
+        fileInput.addEventListener('change', (e) => {
+            log('\n=== FILE SELECTED ===');
+            const file = e.target.files[0];
+            
+            if (!file) {
+                log('No file selected');
+                return;
+            }
+            
+            log('File name: ' + file.name);
+            log('File size: ' + file.size + ' bytes');
+            log('File type: ' + file.type);
+            
+            // Test file type detection
+            const fileName = file.name.toLowerCase();
+            let detectedType = 'unknown';
+            
+            if (fileName.endsWith('.html') || fileName.endsWith('.htm')) detectedType = 'html';
+            else if (fileName.endsWith('.pdf')) detectedType = 'pdf';
+            else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) detectedType = 'docx';
+            else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) detectedType = 'xlsx';
+            else if (fileName.endsWith('.pptx') || fileName.endsWith('.ppt')) detectedType = 'pptx';
+            
+            log('Detected type: ' + detectedType);
+            
+            // Test Data URL conversion
+            log('\n=== CONVERTING TO DATA URL ===');
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const dataURL = e.target.result;
+                log('Data URL created successfully');
+                log('Data URL length: ' + dataURL.length);
+                log('Data URL prefix: ' + dataURL.substring(0, 50) + '...');
+                
+                fileInfo.innerHTML = `
+                    <strong>Success!</strong><br>
+                    File: ${file.name}<br>
+                    Type: ${detectedType}<br>
+                    Size: ${(file.size / 1024).toFixed(2)} KB<br>
+                    Data URL length: ${dataURL.length}
+                `;
+            };
+            
+            reader.onerror = (e) => {
+                log('ERROR reading file: ' + e);
+                fileInfo.innerHTML = '<strong style="color: red;">Error reading file!</strong>';
+            };
+            
+            reader.readAsDataURL(file);
+        });
+        
+        log('\nFile input listener attached');
+        log('=== READY FOR FILE SELECTION ===\n');
+    </script>
+</body>
+</html>

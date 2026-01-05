@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>File Viewer - Kayla Sierra Consulting</title>
+    <link rel="stylesheet" href="css/style.css?v=20241228e">
+    <script src="js/iframe-optimization.js?v=3"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Noto Emoji Font for proper emoji display -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <style>
+        /* Ensure emojis display properly */
+        body, * {
+            font-family: 'Open Sans', 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+        }
+    </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .viewer-header {
+            background: #fff;
+            border-bottom: 2px solid #db8a70;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .viewer-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .viewer-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f5f5f5;
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+
+        .zoom-btn {
+            background: #db8a70;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .zoom-btn:hover {
+            background: #c77960;
+        }
+
+        .zoom-level {
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+        }
+
+        .viewer-content {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            background: #f9f9f9;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .content-wrapper {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 70px);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Responsive iframe container */
+        .iframe-responsive-wrapper {
+            width: 100%;
+            height: calc(100vh - 110px);
+            overflow: auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            min-height: calc(100vh - 110px);
+            border: none;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transform-origin: top left;
+            transition: transform 0.2s ease;
+        }
+
+        .iframe-responsive-wrapper iframe {
+            box-shadow: none;
+        }
+
+        .embedded-content {
+            width: 100%;
+            max-width: 100%;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transform-origin: top left;
+            transition: transform 0.2s;
+            font-family: 'Open Sans', 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+            overflow: auto;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .viewer-header {
+                padding: 10px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .viewer-title {
+                font-size: 1em;
+                flex: 1 1 100%;
+                order: 1;
+            }
+            
+            .viewer-controls {
+                order: 2;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .viewer-content {
+                top: 110px;
+            }
+            
+            .content-wrapper {
+                padding: 10px;
+                min-height: calc(100vh - 110px);
+            }
+            
+            iframe,
+            .iframe-responsive-wrapper {
+                height: calc(100vh - 150px);
+                min-height: calc(100vh - 150px);
+            }
+            
+            .embedded-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .zoom-control {
+                padding: 3px 8px;
+                gap: 5px;
+            }
+            
+            .zoom-btn {
+                padding: 4px 10px;
+                font-size: 14px;
+            }
+            
+            .download-btn,
+            .close-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .viewer-content {
+                top: 130px;
+            }
+            
+            iframe,
+            .iframe-responsive-wrapper {
+                height: calc(100vh - 170px);
+                min-height: calc(100vh - 170px);
+            }
+        }
+        
+        .embedded-content * {
+            font-family: inherit;
+        }
+        
+        /* Prevent sticky and fixed positioning that causes scroll issues */
+        .embedded-content [style*="position: sticky"],
+        .embedded-content [style*="position: fixed"],
+        .embedded-content [style*="position:sticky"],
+        .embedded-content [style*="position:fixed"] {
+            position: relative !important;
+        }
+
+        .close-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #555;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 249, 249, 0.98) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #db8a70;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            box-shadow: 0 4px 20px rgba(219, 138, 112, 0.2);
+        }
+        
+        .spinner-text {
+            margin-top: 25px;
+            font-size: 18px;
+            color: #2d2d2d;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .spinner-subtext {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .no-download iframe {
+            pointer-events: auto;
+        }
+
+        .access-notice {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 10px 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+        <div class="spinner-text">Loading File</div>
+        <div class="spinner-subtext">Preparing viewer...</div>
+    </div>
+
+    <div class="viewer-header">
+        <div class="viewer-title" id="fileTitle">Loading file...</div>
+        <div class="viewer-controls">
+            <div class="zoom-control">
+                <button class="zoom-btn" onclick="zoomOut()">-</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button class="zoom-btn" onclick="zoomIn()">+</button>
+            </div>
+            <button class="download-btn" id="downloadBtn" style="display: none;" onclick="downloadFile()">Download</button>
+            <button class="close-btn" onclick="window.close()">Close</button>
+        </div>
+    </div>
+
+    <div id="accessNotice"></div>
+
+    <div class="viewer-content" id="viewerContent">
+        <div class="content-wrapper" id="contentWrapper">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        let currentZoom = 100;
+        const zoomStep = 10;
+        const minZoom = 50;
+        const maxZoom = 200;
+        let currentFile = null;
+
+        // Get file ID from query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileId = urlParams.get('fileId');
+
+        // Load file information
+        async function loadFile() {
+            if (!fileId) {
+                document.getElementById('loadingScreen').innerHTML = '<p>No file specified</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`tables/uploaded_files/${fileId}`);
+                if (!response.ok) throw new Error('File not found');
+                
+                currentFile = await response.json();
+                
+                // Set file title
+                document.getElementById('fileTitle').textContent = currentFile.file_name;
+
+                // Show download button if allowed
+                if (currentFile.allow_download) {
+                    document.getElementById('downloadBtn').style.display = 'block';
+                } else {
+                    // Show access notice
+                    const notice = document.getElementById('accessNotice');
+                    notice.innerHTML = '<div class="access-notice">This file is view-only and cannot be downloaded.</div>';
+                }
+
+                // Disable copy functionality if not allowed
+                if (!currentFile.allow_copy) {
+                    setupCopyProtection();
+                }
+
+                // Load the file based on type
+                loadFileContent();
+
+            } catch (error) {
+                console.error('Error loading file:', error);
+                document.getElementById('loadingScreen').innerHTML = '<p>Error loading file</p>';
+            }
+        }
+
+        function setupCopyProtection() {
+            // Disable context menu
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable keyboard shortcuts for copy
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'x' || e.key === 'a')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+
+        function loadFileContent() {
+            const wrapper = document.getElementById('contentWrapper');
+            
+            if (currentFile.file_type === 'html') {
+                // For HTML files, use iframe with Data URL directly (preserves everything)
+                const iframe = document.createElement('iframe');
+                iframe.src = currentFile.file_url; // Data URL works directly
+                iframe.id = 'fileFrame';
+                iframe.style.width = '100%';
+                iframe.style.height = '100vh';
+                iframe.style.border = 'none';
+                
+                if (!currentFile.allow_copy) {
+                    iframe.className = 'no-download';
+                    // Note: Copy protection in iframes is limited
+                }
+                
+                wrapper.appendChild(iframe);
+                
+                iframe.onload = () => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+                
+                iframe.onerror = () => {
+                    wrapper.innerHTML = '<p style="text-align: center; padding: 40px;">Error loading file content</p>';
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+            } else if (currentFile.file_type === 'pdf') {
+                // For PDF files stored as Data URL or regular URL
+                const iframe = document.createElement('iframe');
+                iframe.src = currentFile.file_url; // Data URL works directly in iframe
+                iframe.id = 'fileFrame';
+                
+                if (!currentFile.allow_download) {
+                    iframe.className = 'no-download';
+                }
+                
+                wrapper.appendChild(iframe);
+
+                iframe.onload = () => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+                
+                iframe.onerror = () => {
+                    wrapper.innerHTML = `
+                        <div style="text-align: center; padding: 60px 40px;">
+                            <h3>Preview Unavailable</h3>
+                            <p>This PDF cannot be previewed online.</p>
+                            ${currentFile.allow_download ? 
+                                `<a href="${currentFile.file_url}" download="${currentFile.original_filename || currentFile.file_name + '.pdf'}" class="btn btn-primary" style="background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 15px;">Download File</a>` 
+                                : 
+                                '<p>Contact your administrator for access.</p>'
+                            }
+                        </div>
+                    `;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+            } else {
+                // For other file types (DOCX, XLSX, PPTX)
+                // Data URLs for Office files cannot be previewed - must be downloaded
+                const isDataURL = currentFile.file_url.startsWith('data:');
+                
+                if (isDataURL) {
+                    // Data URL - Office files must be downloaded to view
+                    wrapper.innerHTML = `
+                        <div style="text-align: center; padding: 60px 40px; max-width: 600px; margin: 0 auto;">
+                            <div style="background: #f9f9f9; border-radius: 8px; padding: 40px; border: 2px solid #e0e0e0;">
+                                <h2 style="margin-bottom: 20px; color: #2d2d2d;">Preview Not Available</h2>
+                                <p style="color: #666; margin-bottom: 10px; line-height: 1.6;">
+                                    <strong>${escapeHtml(currentFile.file_name)}</strong>
+                                </p>
+                                <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+                                    This ${currentFile.file_type.toUpperCase()} file cannot be previewed online. Click below to download and open it with ${getAppName(currentFile.file_type)}.
+                                </p>
+                                <a href="${currentFile.file_url}" download="${currentFile.original_filename || currentFile.file_name + '.' + currentFile.file_type}" class="btn btn-primary" style="background: #4CAF50; color: white; padding: 14px 32px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 16px; font-weight: 600;">Download File to View</a>
+                                <p style="color: #999; margin-top: 15px; font-size: 14px;">File will open in ${getAppName(currentFile.file_type)}</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    
+                    // Hide the download button in header since we have one in the message
+                    const headerDownloadBtn = document.getElementById('downloadBtn');
+                    if (headerDownloadBtn) {
+                        headerDownloadBtn.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Check if file URL is publicly accessible
+                const isPublicUrl = currentFile.file_url.startsWith('http://') || currentFile.file_url.startsWith('https://');
+                const isLocalFile = currentFile.file_url.startsWith('uploads/') || currentFile.file_url.startsWith('embedded-files/');
+                
+                if (isLocalFile) {
+                    // Local files cannot be previewed by online viewers
+                    wrapper.innerHTML = `
+                        <div style="text-align: center; padding: 60px 40px; max-width: 600px; margin: 0 auto;">
+                            <div style="background: #f9f9f9; border-radius: 8px; padding: 40px; border: 2px solid #e0e0e0;">
+                                <h2 style="margin-bottom: 20px; color: #2d2d2d;">Preview Not Available</h2>
+                                <p style="color: #666; margin-bottom: 10px; line-height: 1.6;">
+                                    <strong>${escapeHtml(currentFile.file_name)}</strong>
+                                </p>
+                                <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+                                    This ${currentFile.file_type.toUpperCase()} file is stored locally and cannot be previewed online.
+                                </p>
+                                <a href="${currentFile.file_url}" download class="btn btn-primary" style="background: #4CAF50; color: white; padding: 14px 32px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 16px; font-weight: 600;">Download File to View</a>
+                                <p style="color: #999; margin-top: 15px; font-size: 14px;">Click to download and open on your device</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    
+                    // Hide the download button in header since we have one in the message
+                    const headerDownloadBtn = document.getElementById('downloadBtn');
+                    if (headerDownloadBtn) {
+                        headerDownloadBtn.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // For public URLs, try online viewers
+                const iframe = document.createElement('iframe');
+                
+                if (currentFile.file_type === 'pdf') {
+                    iframe.src = currentFile.file_url;
+                } else {
+                    // Try Microsoft Office Online Viewer for public URLs
+                    iframe.src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(currentFile.file_url)}`;
+                }
+                
+                iframe.id = 'fileFrame';
+                
+                if (!currentFile.allow_download) {
+                    iframe.className = 'no-download';
+                }
+                
+                wrapper.appendChild(iframe);
+
+                let loaded = false;
+                
+                iframe.onload = () => {
+                    loaded = true;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+                
+                iframe.onerror = () => {
+                    wrapper.innerHTML = `
+                        <div style="text-align: center; padding: 60px 40px;">
+                            <h3>Preview Unavailable</h3>
+                            <p>This file cannot be previewed online.</p>
+                            ${currentFile.allow_download ? 
+                                `<a href="${currentFile.file_url}" download class="btn btn-primary" style="background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 15px;">Download File</a>` 
+                                : 
+                                '<p>Contact your administrator for access.</p>'
+                            }
+                        </div>
+                    `;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+                
+                // Fallback timeout for online viewers that may fail silently
+                setTimeout(() => {
+                    if (!loaded && currentFile.file_type !== 'pdf') {
+                        wrapper.innerHTML = `
+                            <div style="text-align: center; padding: 60px 40px; max-width: 600px; margin: 0 auto;">
+                                <div style="background: #f9f9f9; border-radius: 8px; padding: 40px; border: 2px solid #e0e0e0;">
+                                    <h2 style="margin-bottom: 20px; color: #2d2d2d;">Preview Unavailable</h2>
+                                    <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+                                        This file cannot be previewed online. The document may not be publicly accessible or the preview service is unavailable.
+                                    </p>
+                                    ${currentFile.allow_download ? 
+                                        `<a href="${currentFile.file_url}" download class="btn btn-primary" style="background: #4CAF50; color: white; padding: 14px 32px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 16px; font-weight: 600;">Download File to View</a>
+                                        <p style="color: #999; margin-top: 15px; font-size: 14px;">File will open in your default application</p>` 
+                                        : 
+                                        `<p style="color: #999; margin-top: 20px;">This file is view-only and cannot be downloaded.<br>Please contact your administrator for access.</p>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById('loadingScreen').style.display = 'none';
+                    }
+                }, 8000);
+            }
+        }
+
+        function zoomIn() {
+            if (currentZoom < maxZoom) {
+                currentZoom += zoomStep;
+                updateZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (currentZoom > minZoom) {
+                currentZoom -= zoomStep;
+                updateZoom();
+            }
+        }
+
+        function updateZoom() {
+            const content = document.getElementById('embeddedContent') || document.getElementById('fileFrame');
+            if (content) {
+                const scale = currentZoom / 100;
+                content.style.transform = `scale(${scale})`;
+                document.getElementById('zoomLevel').textContent = currentZoom + '%';
+                
+                // When zooming, adjust the wrapper to accommodate the scaled content
+                const wrapper = content.closest('.iframe-responsive-wrapper') || document.getElementById('contentWrapper');
+                if (wrapper) {
+                    if (scale > 1) {
+                        // When zoomed in, allow scrolling to see all content
+                        wrapper.style.overflow = 'auto';
+                        const scaledWidth = content.offsetWidth * scale;
+                        const scaledHeight = content.offsetHeight * scale;
+                        content.style.width = `${100 / scale}%`;
+                    } else {
+                        wrapper.style.overflow = 'auto';
+                        content.style.width = '100%';
+                    }
+                }
+            }
+        }
+
+        function downloadFile() {
+            if (currentFile && currentFile.allow_download) {
+                window.open(currentFile.file_url, '_blank');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getAppName(fileType) {
+            const appNames = {
+                'docx': 'Microsoft Word',
+                'xlsx': 'Microsoft Excel',
+                'pptx': 'Microsoft PowerPoint'
+            };
+            return appNames[fileType] || 'your default application';
+        }
+
+        // Load file on page load
+        loadFile();
+    </script>
+</body>
+</html>

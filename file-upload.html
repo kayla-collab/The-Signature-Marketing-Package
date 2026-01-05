@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Manager - Kayla Sierra Consulting</title>
+    <link rel="stylesheet" href="css/style.css?v=20241228e">
+    <script src="js/iframe-optimization.js?v=3"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome from jsDelivr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        /* Ensure Font Awesome loads properly */
+        .fas, .fa {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-style: normal;
+            display: inline-block;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Tab button styles */
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            border-bottom: 3px solid #db8a70;
+            color: #db8a70;
+        }
+        
+        .tab-btn i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div class="spinner-text">Loading File Manager</div>
+        <div class="spinner-subtext">Please wait...</div>
+    </div>
+
+    <div class="admin-container">
+        <div class="sidebar">
+            <div class="logo">Kayla Sierra Consulting</div>
+            <div class="nav-menu">
+                <a href="admin.html" class="nav-item">Dashboard</a>
+                <a href="admin.html#clients" class="nav-item">Manage Clients</a>
+                <a href="admin.html#modules" class="nav-item">Manage Modules</a>
+                <a href="admin.html#content" class="nav-item">Manage Content</a>
+                <a href="client-modules.html" class="nav-item">Client Modules</a>
+                <a href="file-upload.html" class="nav-item active">File Manager</a>
+                <a href="#" onclick="logout()" class="nav-item">Logout</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="content-header">
+                <h1>File Upload Manager</h1>
+                <p>Upload and manage embedded files for your modules</p>
+            </div>
+
+            <div class="card">
+                <h2>Upload New File</h2>
+                
+                <!-- Tab Selection -->
+                <div style="margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button type="button" class="tab-btn active" onclick="switchTab('file')" id="fileTab">
+                        <i class="fas fa-file-upload"></i> Upload File
+                    </button>
+                    <button type="button" class="tab-btn" onclick="switchTab('code')" id="codeTab">
+                        <i class="fas fa-code"></i> Paste HTML Code
+                    </button>
+                </div>
+                
+                <form id="uploadForm" class="form-section">
+                    <!-- FILE UPLOAD TAB -->
+                    <div id="fileUploadTab">
+                        <div class="form-group">
+                            <label for="fileInput">Select File *</label>
+                            <input type="file" id="fileInput" accept=".html,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                            <small>Supported: HTML, PDF, Word (.docx), Excel (.xlsx), PowerPoint (.pptx)</small>
+                        </div>
+                    </div>
+                    
+                    <!-- HTML CODE TAB -->
+                    <div id="htmlCodeTab" style="display: none;">
+                        <div class="form-group">
+                            <label for="htmlCode">Paste HTML Code *</label>
+                            <textarea id="htmlCode" rows="12" placeholder="Paste your HTML code here (e.g., Canva embed code, iframe, or any HTML content)" style="font-family: 'Courier New', monospace; font-size: 13px;"></textarea>
+                            <small>⚠️ Note: Pasted HTML code cannot be edited after uploading. It will be stored as-is.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fileName">Display Name *</label>
+                        <input type="text" id="fileName" required placeholder="e.g., YouTube Optimization Checklist">
+                        <small>This name will appear in the file selector</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>File Type: <span id="fileTypeDisplay" style="font-weight: 600; color: #db8a70;">Not selected</span></label>
+                        <input type="hidden" id="fileType">
+                        <small>Auto-detected from the file you select or set to HTML for pasted code</small>
+                    </div>
+
+                    <div class="form-group" id="fileSizeGroup">
+                        <label>File Size: <span id="fileSizeDisplay" style="font-weight: 600;">-</span></label>
+                        <small>Maximum recommended size: 10MB for best performance</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="allowDownload" checked>
+                            Allow clients to download this file
+                        </label>
+                        <small>Note: Office files (DOCX, XLSX, PPTX) must be downloadable for viewing</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="allowCopy" checked>
+                            Allow clients to copy content from this file
+                        </label>
+                        <small>Only applies to HTML files with selectable text</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fileDescription">Description (optional)</label>
+                        <textarea id="fileDescription" rows="3" placeholder="Brief description of what this file contains"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="uploadBtn">
+                        <span id="uploadBtnText">Upload File</span>
+                        <span id="uploadProgress" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 30px;">
+                <h2>Uploaded Files</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Type</th>
+                                <th>Downloadable</th>
+                                <th>Copyable</th>
+                                <th>Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesList">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 30px;">
+                                    Loading files...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js?v=20241228h"></script>
+    <script src="js/file-upload.js?v=20241228h"></script>
+</body>
+</html>

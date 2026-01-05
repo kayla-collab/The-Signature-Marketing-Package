@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Signature Marketing Package - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=20241228e">
+    <script src="js/iframe-optimization.js?v=3"></script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <h1>The Signature Marketing Package</h1>
+                <p class="tagline">by Kayla Sierra Consulting</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Need help accessing your account? <a href="mailto:kayla@kaylasierra.com">Contact Support</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="legal-footer" style="margin-left: 0; width: 100%; text-align: center;">
+        <p style="text-align: center;">&copy; <span id="currentYear"></span> <a href="https://www.kaylasierra.com" target="_blank" style="color: #db8a70; text-decoration: none;">Kayla Sierra Consulting</a>. All Rights Reserved.</p>
+        <p class="disclaimer" style="text-align: center;"><strong>DISCLAIMER:</strong> The strategies, templates, and recommendations provided in The Signature Marketing Package are for educational and consulting purposes only. Results may vary based on individual effort, market conditions, and business circumstances. Kayla Sierra Consulting does not guarantee specific outcomes or revenue results. All content is provided "as is" without warranty of any kind. By using these materials, you agree that Kayla Sierra Consulting is not liable for any decisions made or actions taken based on the information provided.</p>
+    </footer>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Signing you in</div>
+        <div class="loading-subtext">Preparing your dashboard...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
+        </div>
+    </div>
+    
+    <script src="js/auth.js?v=20241228"></script>
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+/* 
+ * PERFORMANCE & INTERACTION ENHANCEMENTS
+ * Keeps your existing branding - adds smooth animations & optimizations
+ */
+
+/* ==========================================
+   SMOOTH TRANSITIONS & ANIMATIONS
+   ========================================== */
+
+/* Global smooth transitions */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth page transitions */
+.content-view,
+.module-content,
+.card,
+.btn {
+    transition: all 250ms ease-in-out;
+}
+
+/* Fade-in animation for content */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Apply fade-in to main content areas */
+.content-view,
+section {
+    animation: fadeIn 400ms ease-out;
+}
+
+/* Staggered animations for lists */
+.module-grid > *,
+.modules-container > *,
+.nav-menu > li {
+    animation: fadeIn 400ms ease-out;
+}
+
+.module-grid > *:nth-child(1),
+.modules-container > *:nth-child(1) { animation-delay: 0ms; }
+.module-grid > *:nth-child(2),
+.modules-container > *:nth-child(2) { animation-delay: 50ms; }
+.module-grid > *:nth-child(3),
+.modules-container > *:nth-child(3) { animation-delay: 100ms; }
+.module-grid > *:nth-child(4),
+.modules-container > *:nth-child(4) { animation-delay: 150ms; }
+.module-grid > *:nth-child(5),
+.modules-container > *:nth-child(5) { animation-delay: 200ms; }
+.module-grid > *:nth-child(6),
+.modules-container > *:nth-child(6) { animation-delay: 250ms; }
+
+/* ==========================================
+   HOVER EFFECTS
+   ========================================== */
+
+/* Button hover effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Card hover effects */
+.card,
+.module-card,
+.module-item {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 300ms ease-in-out;
+}
+
+.card:hover,
+.module-card:hover,
+.module-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Module card specific hover */
+.module-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.module-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    transition: border-color 250ms ease-in-out;
+    pointer-events: none;
+}
+
+.module-card:hover::after {
+    border-color: currentColor;
+    opacity: 0.2;
+}
+
+/* Link hover effects */
+a {
+    transition: color 200ms ease-in-out, opacity 200ms ease-in-out;
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* Nav menu hover effects */
+.nav-link,
+.nav-item {
+    position: relative;
+    transition: all 250ms ease-in-out;
+}
+
+.nav-link::before,
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    background: currentColor;
+    transform: translateY(-50%);
+    transition: height 250ms ease-in-out;
+    border-radius: 0 2px 2px 0;
+}
+
+.nav-link:hover::before,
+.nav-item:hover::before {
+    height: 60%;
+}
+
+/* Table row hover */
+table tbody tr {
+    transition: background-color 200ms ease-in-out, transform 150ms ease-in-out;
+}
+
+table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    transform: scale(1.005);
+}
+
+/* Input focus effects */
+input:focus,
+textarea:focus,
+select:focus {
+    transform: scale(1.01);
+    transition: all 250ms ease-in-out;
+}
+
+/* ==========================================
+   LOADING STATES
+   ========================================== */
+
+/* Enhanced loading screen */
+#loading-screen {
+    transition: opacity 500ms ease-in-out, visibility 500ms ease-in-out;
+    backdrop-filter: blur(10px);
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Smooth spinner animation */
+.spinner {
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Loading text fade */
+.spinner-text,
+.spinner-subtext {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Skeleton loading for content */
+.loading-skeleton {
+    background: linear-gradient(90deg, 
+        rgba(0, 0, 0, 0.06) 25%, 
+        rgba(0, 0, 0, 0.03) 50%, 
+        rgba(0, 0, 0, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ==========================================
+   PERFORMANCE OPTIMIZATIONS
+   ========================================== */
+
+/* Hardware acceleration for animations */
+.btn,
+.card,
+.module-card,
+.nav-link,
+.nav-item {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Optimize images */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Optimize font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ==========================================
+   MICRO-INTERACTIONS
+   ========================================== */
+
+/* Click ripple effect */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 600ms, height 600ms, opacity 600ms;
+    opacity: 0;
+}
+
+.btn:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+}
+
+/* Checkbox/toggle smooth transitions */
+input[type="checkbox"] {
+    transition: all 250ms ease-in-out;
+}
+
+/* Progress bar animation */
+.progress-fill,
+.progress-bar-fill {
+    transition: width 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Badge pulse on update */
+@keyframes badgePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.badge-updated {
+    animation: badgePulse 400ms ease-in-out;
+}
+
+/* Modal slide in */
+.modal {
+    transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+.modal.show {
+    animation: modalSlideIn 400ms ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Toast notifications slide */
+.toast {
+    animation: toastSlide 300ms ease-out;
+}
+
+@keyframes toastSlide {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    transition: outline-offset 200ms ease-in-out;
+}
+
+/* ==========================================
+   RESPONSIVE OPTIMIZATIONS
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* Reduce animation complexity on mobile */
+    .module-grid > *,
+    .modules-container > * {
+        animation-delay: 0ms !important;
+    }
+    
+    /* Simpler hover effects on touch devices */
+    .card:hover,
+    .module-card:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* ==========================================
+   SMOOTH SCROLLBAR
+   ========================================== */
+
+/* Custom scrollbar (Webkit) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    transition: background 200ms ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   PAGE LOAD OPTIMIZATION
+   ========================================== */
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+html {
+    opacity: 0;
+    animation: pageLoad 200ms ease-in-out forwards;
+}
+
+@keyframes pageLoad {
+    to { opacity: 1; }
+}
+
+/* Lazy load images */
+img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 400ms ease-in-out;
+}
+
+img[loading="lazy"].loaded {
+    opacity: 1;
+}
+
+/* ==========================================
+   PRINT OPTIMIZATIONS
+   ========================================== */
+
+@media print {
+    /* Disable animations for print */
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}

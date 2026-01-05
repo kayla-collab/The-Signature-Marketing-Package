@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Awesome Icon Test</title>
+    <!-- Font Awesome from jsDelivr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .icon-row {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .icon-row i {
+            width: 40px;
+            font-size: 20px;
+            margin-right: 15px;
+            color: #db8a70;
+        }
+        
+        .icon-row span {
+            font-weight: 600;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        h2 {
+            color: #666;
+            margin-top: 0;
+        }
+        
+        .status {
+            padding: 20px;
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Font Awesome Icon Test</h1>
+    
+    <div class="status">
+        <strong>✓ If you see icons below (not bullets/squares), Font Awesome is working!</strong>
+    </div>
+
+    <div class="test-section">
+        <h2>Tab Icons</h2>
+        <div class="icon-row">
+            <i class="fas fa-file-upload"></i>
+            <span>Upload File</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-code"></i>
+            <span>Paste HTML Code</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>File Type Icons</h2>
+        <div class="icon-row">
+            <i class="fas fa-file-code"></i>
+            <span>HTML File</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-file-pdf"></i>
+            <span>PDF File</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-file-word"></i>
+            <span>Word Document</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-file-excel"></i>
+            <span>Excel Spreadsheet</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-file-powerpoint"></i>
+            <span>PowerPoint Presentation</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Action Icons</h2>
+        <div class="icon-row">
+            <i class="fas fa-eye"></i>
+            <span>Preview</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-download"></i>
+            <span>Download</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-trash"></i>
+            <span>Delete</span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Status Icons</h2>
+        <div class="icon-row">
+            <i class="fas fa-check" style="color: #4caf50;"></i>
+            <span>Yes / Enabled</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-times" style="color: #f44336;"></i>
+            <span>No / Disabled</span>
+        </div>
+        <div class="icon-row">
+            <i class="fas fa-exclamation-triangle" style="color: #ff9800;"></i>
+            <span>Warning (Large File)</span>
+        </div>
+    </div>
+
+    <script>
+        // Check if Font Awesome loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const testIcon = document.querySelector('.fas');
+                const computedStyle = window.getComputedStyle(testIcon);
+                const fontFamily = computedStyle.getPropertyValue('font-family');
+                
+                console.log('Font Awesome test:');
+                console.log('Font Family:', fontFamily);
+                console.log('Icon element:', testIcon);
+                
+                if (fontFamily.includes('Font Awesome')) {
+                    console.log('✓ Font Awesome loaded successfully!');
+                } else {
+                    console.error('✗ Font Awesome may not be loaded. Font family is:', fontFamily);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

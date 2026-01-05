@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Modules Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+        .progress {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Module Database Fix Utility</h1>
+        
+        <div class="step warning">
+            <h2>⚠️ Important</h2>
+            <p>This tool will check and fix any issues with your modules database. It's safe to run multiple times.</p>
+        </div>
+
+        <div class="step">
+            <h2>Step 1: Analyze Current Database</h2>
+            <button onclick="analyzeDatabase()">Analyze Modules</button>
+            <pre id="analysis-output">Click "Analyze Modules" to start...</pre>
+        </div>
+
+        <div class="step" id="fix-section" style="display:none;">
+            <h2>Step 2: Apply Fixes</h2>
+            <button onclick="applyFixes()">Fix All Issues</button>
+            <div class="progress" id="progress-section" style="display:none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+                </div>
+            </div>
+            <pre id="fix-output"></pre>
+        </div>
+
+        <div class="step success" id="success-section" style="display:none;">
+            <h2>✅ All Done!</h2>
+            <p>Your modules database has been fixed. You can now:</p>
+            <ul>
+                <li><a href="module-builder.html">Go to Module Builder</a></li>
+                <li><a href="admin.html">Go to Admin Dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let issues = [];
+        let modulesToFix = [];
+
+        async function analyzeDatabase() {
+            const output = document.getElementById('analysis-output');
+            output.textContent = '🔍 Analyzing database...\n\n';
+            issues = [];
+            modulesToFix = [];
+
+            try {
+                // Fetch all modules
+                const response = await fetch('tables/modules?limit=1000');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const modules = data.data || [];
+
+                output.textContent += `Found ${modules.length} modules in database\n\n`;
+
+                // Check each module for issues
+                for (const module of modules) {
+                    const moduleIssues = [];
+                    
+                    // Check for old field names
+                    if (module.module_name && !module.title) {
+                        moduleIssues.push('Uses old field "module_name" instead of "title"');
+                        modulesToFix.push({
+                            id: module.id,
+                            action: 'rename_field',
+                            oldData: module,
+                            newData: {
+                                title: module.module_name || 'Unnamed Module',
+                                description: module.module_description || module.description || '',
+                                order_index: module.order_index || 1,
+                                icon: module.icon || ''
+                            }
+                        });
+                    }
+                    
+                    // Check for missing required fields
+                    if (!module.title && !module.module_name) {
+                        moduleIssues.push('Missing title');
+                    }
+                    
+                    if (module.order_index === undefined || module.order_index === null) {
+                        moduleIssues.push('Missing order_index');
+                        modulesToFix.push({
+                            id: module.id,
+                            action: 'fix_order',
+                            oldData: module,
+                            newData: {
+                                ...module,
+                                order_index: 1
+                            }
+                        });
+                    }
+
+                    if (moduleIssues.length > 0) {
+                        issues.push({
+                            module: module.title || module.module_name || module.id,
+                            issues: moduleIssues
+                        });
+                    }
+                }
+
+                // Display results
+                if (issues.length === 0) {
+                    output.innerHTML = '<span style="color: green;">✅ No issues found! Database is healthy.</span>';
+                    document.getElementById('success-section').style.display = 'block';
+                } else {
+                    output.textContent += `⚠️ Found ${issues.length} module(s) with issues:\n\n`;
+                    issues.forEach(item => {
+                        output.textContent += `📦 ${item.module}:\n`;
+                        item.issues.forEach(issue => {
+                            output.textContent += `   - ${issue}\n`;
+                        });
+                        output.textContent += '\n';
+                    });
+                    
+                    output.textContent += `\n✅ Can fix ${modulesToFix.length} issue(s) automatically\n`;
+                    document.getElementById('fix-section').style.display = 'block';
+                }
+
+            } catch (error) {
+                output.innerHTML = `<span style="color: red;">❌ Error: ${error.message}</span>`;
+                console.error(error);
+            }
+        }
+
+        async function applyFixes() {
+            const output = document.getElementById('fix-output');
+            const progressSection = document.getElementById('progress-section');
+            const progressFill = document.getElementById('progress-fill');
+            
+            output.textContent = '🔧 Applying fixes...\n\n';
+            progressSection.style.display = 'block';
+            
+            let fixed = 0;
+            const total = modulesToFix.length;
+
+            for (let i = 0; i < total; i++) {
+                const fix = modulesToFix[i];
+                const progress = Math.round(((i + 1) / total) * 100);
+                
+                progressFill.style.width = progress + '%';
+                progressFill.textContent = progress + '%';
+
+                try {
+                    output.textContent += `Fixing module ${fix.oldData.title || fix.oldData.module_name || fix.id}...\n`;
+
+                    const response = await fetch(`tables/modules/${fix.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(fix.newData)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    }
+
+                    output.textContent += `   ✅ Fixed\n`;
+                    fixed++;
+
+                } catch (error) {
+                    output.textContent += `   ❌ Error: ${error.message}\n`;
+                    console.error('Fix error:', error);
+                }
+            }
+
+            output.textContent += `\n✅ Fixed ${fixed} of ${total} issues\n`;
+            
+            if (fixed === total) {
+                document.getElementById('success-section').style.display = 'block';
+                setTimeout(() => {
+                    analyzeDatabase(); // Re-analyze to confirm
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

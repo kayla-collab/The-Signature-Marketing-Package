@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Demo Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .progress {
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        #log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .log-success { color: #4caf50; }
+        .log-error { color: #f44336; }
+        .log-info { color: #2196F3; }
+        .log-warning { color: #ff9800; }
+        .credential-box {
+            background: #fff;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .credential-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f5f5f5;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+        .credential-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .credential-value {
+            color: #667eea;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Comprehensive Demo Setup</h1>
+        <p class="subtitle">Set up a fully-featured demo with realistic content to showcase the platform</p>
+
+        <div class="info-box">
+            <strong>📋 What This Creates:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>Demo client account with login credentials</li>
+                <li>5 comprehensive modules with real content</li>
+                <li>20+ content items (videos, files, text, links)</li>
+                <li>Welcome message for demo client</li>
+                <li>Sample progress tracking</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📦 Demo Content Includes:</h2>
+            <ul style="margin-left: 20px; line-height: 2;">
+                <li><strong>The Long-Game Engine</strong> - YouTube content planning module</li>
+                <li><strong>Brand Strategy Blueprint</strong> - Brand development content</li>
+                <li><strong>Social Media Mastery</strong> - Social media marketing</li>
+                <li><strong>Email Marketing System</strong> - Email campaigns & automation</li>
+                <li><strong>Client Onboarding</strong> - Welcome & getting started</li>
+            </ul>
+        </div>
+
+        <div class="credential-box" id="credentials" style="display:none;">
+            <h3>🔐 Demo Account Credentials</h3>
+            <div class="credential-item">
+                <span class="credential-label">Email:</span>
+                <span class="credential-value">demo@client.com</span>
+            </div>
+            <div class="credential-item">
+                <span class="credential-label">Password:</span>
+                <span class="credential-value">demo123</span>
+            </div>
+            <div class="credential-item">
+                <span class="credential-label">Login URL:</span>
+                <span class="credential-value">index.html</span>
+            </div>
+        </div>
+
+        <button id="setupBtn" onclick="setupDemo()">🚀 Create Comprehensive Demo</button>
+
+        <div class="progress" id="progressSection" style="display:none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+            </div>
+            <div id="statusText" style="text-align: center; color: #666; font-weight: 600;"></div>
+        </div>
+
+        <div id="log"></div>
+
+        <div class="success-box" id="successBox" style="display:none;">
+            <h3>✅ Demo Setup Complete!</h3>
+            <p style="margin-top: 10px;"><strong>Next Steps:</strong></p>
+            <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li>Log out of admin account</li>
+                <li>Go to <a href="index.html">index.html</a></li>
+                <li>Login with: <strong>demo@client.com</strong> / <strong>demo123</strong></li>
+                <li>Explore the demo content and features!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let logElement;
+        let progressBar;
+        let progressSection;
+        let statusText;
+
+        function log(message, type = 'info') {
+            if (!logElement) logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = `log-${type}`;
+            logElement.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateProgress(percent, status) {
+            if (!progressBar) {
+                progressBar = document.getElementById('progressBar');
+                progressSection = document.getElementById('progressSection');
+                statusText = document.getElementById('statusText');
+                progressSection.style.display = 'block';
+            }
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = percent + '%';
+            statusText.textContent = status;
+        }
+
+        async function setupDemo() {
+            const btn = document.getElementById('setupBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Setting up demo...';
+
+            log('🚀 Starting comprehensive demo setup...', 'info');
+            updateProgress(0, 'Initializing...');
+
+            try {
+                // Step 1: Create demo client
+                updateProgress(10, 'Creating demo client account...');
+                log('Creating demo client: demo@client.com', 'info');
+                
+                const clientData = {
+                    email: 'demo@client.com',
+                    password_hash: 'demo123',
+                    full_name: 'Demo Client',
+                    role: 'client',
+                    is_active: true,
+                    access_expires: null
+                };
+
+                const clientResponse = await fetch('tables/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clientData)
+                });
+
+                let demoClient;
+                if (clientResponse.ok) {
+                    demoClient = await clientResponse.json();
+                    log('✅ Demo client created successfully', 'success');
+                } else {
+                    // Client might already exist, try to fetch
+                    const usersResponse = await fetch('tables/users?limit=100');
+                    const users = await usersResponse.json();
+                    demoClient = users.data.find(u => u.email === 'demo@client.com');
+                    if (demoClient) {
+                        log('✅ Demo client already exists, using existing account', 'success');
+                    } else {
+                        throw new Error('Failed to create demo client');
+                    }
+                }
+
+                document.getElementById('credentials').style.display = 'block';
+
+                // Step 2: Create modules
+                updateProgress(20, 'Creating modules...');
+                log('Creating 5 demo modules...', 'info');
+
+                const modules = [
+                    {
+                        title: 'The Long-Game Engine',
+                        description: '<p><strong>YouTube Content Planning System</strong></p><p>Social media moves fast, but YouTube is where we build assets that last. This module includes everything you need to create a sustainable YouTube strategy:</p><ul><li>30-day content calendar tailored to your niche</li><li>Plug-and-play script templates</li><li>SEO checklist to get your videos found</li><li>Analytics guides to track what matters</li></ul>',
+                        order_index: 1,
+                        icon: '🎯'
+                    },
+                    {
+                        title: 'Brand Strategy Blueprint',
+                        description: '<p><strong>Build a Brand That Stands Out</strong></p><p>Your brand is more than a logo—it\'s the story you tell and the promise you keep. This module covers:</p><ul><li>Brand positioning and messaging</li><li>Visual identity guidelines</li><li>Brand voice and tone</li><li>Competitor analysis templates</li></ul>',
+                        order_index: 2,
+                        icon: '🎨'
+                    },
+                    {
+                        title: 'Social Media Mastery',
+                        description: '<p><strong>Dominate Your Social Channels</strong></p><p>Stop posting randomly and start posting strategically. Learn how to:</p><ul><li>Create content that converts</li><li>Build engaged communities</li><li>Use analytics to improve performance</li><li>Master platform-specific strategies</li></ul>',
+                        order_index: 3,
+                        icon: '📱'
+                    },
+                    {
+                        title: 'Email Marketing System',
+                        description: '<p><strong>Turn Subscribers Into Customers</strong></p><p>Email is still the highest-ROI marketing channel. This module includes:</p><ul><li>Email sequence templates</li><li>Subject line formulas that work</li><li>Automation workflows</li><li>List growth strategies</li></ul>',
+                        order_index: 4,
+                        icon: '📧'
+                    },
+                    {
+                        title: 'Client Onboarding',
+                        description: '<p><strong>Welcome to Your Success Journey!</strong></p><p>Start here to get the most out of this platform:</p><ul><li>Platform navigation guide</li><li>How to track your progress</li><li>Tips for implementing what you learn</li><li>Support and resources</li></ul>',
+                        order_index: 5,
+                        icon: '👋'
+                    }
+                ];
+
+                const createdModules = [];
+                for (const moduleData of modules) {
+                    const response = await fetch('tables/modules', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(moduleData)
+                    });
+                    if (response.ok) {
+                        const module = await response.json();
+                        createdModules.push(module);
+                        log(`✅ Created module: ${moduleData.title}`, 'success');
+                    }
+                }
+
+                // Step 3: Assign modules to demo client
+                updateProgress(40, 'Assigning modules to demo client...');
+                log('Assigning all modules to demo client...', 'info');
+
+                for (const module of createdModules) {
+                    const assignmentData = {
+                        client_id: demoClient.id,
+                        module_id: module.id,
+                        is_enabled: true
+                    };
+                    await fetch('tables/client_modules', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(assignmentData)
+                    });
+                }
+                log('✅ All modules assigned to demo client', 'success');
+
+                // Step 4: Create content items
+                updateProgress(50, 'Creating content items...');
+                log('Creating demo content items...', 'info');
+
+                const contentItems = [
+                    // Long-Game Engine Content
+                    {
+                        module_id: createdModules[0].id,
+                        title: 'Welcome to The Long-Game Engine',
+                        content_type: 'text',
+                        content_body: '<h2>Welcome! 🎉</h2><p>You\'re about to discover how to create <strong>YouTube content that actually works</strong>.</p><p>Unlike social media posts that disappear in 24 hours, YouTube videos become <em>evergreen assets</em> that work for you while you sleep.</p><h3>What You\'ll Learn:</h3><ul><li>How to plan content strategically (not randomly)</li><li>Proven script templates that keep viewers engaged</li><li>SEO techniques to get discovered</li><li>Analytics that actually matter</li></ul><p><strong>Let\'s build something that lasts! 🚀</strong></p>',
+                        order_index: 1
+                    },
+                    {
+                        module_id: createdModules[0].id,
+                        title: '30-Day Content Calendar',
+                        content_type: 'text',
+                        content_body: '<h2>Your 30-Day YouTube Content Plan</h2><p>Stop stressing about "what should I post next?" This calendar gives you <strong>30 days of video ideas</strong> tailored to your niche.</p><h3>How to Use This Calendar:</h3><ol><li><strong>Week 1:</strong> Educational content (teach something valuable)</li><li><strong>Week 2:</strong> Behind-the-scenes (build connection)</li><li><strong>Week 3:</strong> Problem-solving (address pain points)</li><li><strong>Week 4:</strong> Inspiration (motivate your audience)</li></ol><p><em>Pro tip:</em> Batch-record multiple videos in one day to stay ahead!</p>',
+                        order_index: 2
+                    },
+                    {
+                        module_id: createdModules[0].id,
+                        title: 'Script Templates',
+                        content_type: 'text',
+                        content_body: '<h2>Proven Video Script Templates</h2><p>Never stare at a blank page again. Use these <strong>plug-and-play templates</strong>:</p><h3>The Hook-Value-CTA Template:</h3><p><strong>Hook (First 5 seconds):</strong></p><ul><li>"In this video, you\'ll learn [specific outcome]"</li><li>"By the end of this, you\'ll be able to [achievement]"</li></ul><p><strong>Value (Main Content):</strong></p><ul><li>Point 1: [Main tip with example]</li><li>Point 2: [Main tip with example]</li><li>Point 3: [Main tip with example]</li></ul><p><strong>CTA (Call To Action):</strong></p><ul><li>"If this helped, subscribe for more!"</li><li>"Drop a comment with your biggest takeaway"</li></ul>',
+                        order_index: 3
+                    },
+                    {
+                        module_id: createdModules[0].id,
+                        title: 'SEO Checklist',
+                        content_type: 'text',
+                        content_body: '<h2>YouTube SEO Checklist ✅</h2><p>Follow this checklist for <strong>every video</strong> to maximize discoverability:</p><h3>Before You Upload:</h3><ul><li>✅ Research keywords (use TubeBuddy or VidIQ)</li><li>✅ Write compelling title (under 60 characters)</li><li>✅ Create custom thumbnail (1280x720px)</li></ul><h3>During Upload:</h3><ul><li>✅ Write detailed description (200+ words)</li><li>✅ Add 5-10 relevant tags</li><li>✅ Choose correct category</li><li>✅ Add end screens and cards</li></ul><h3>After Publishing:</h3><ul><li>✅ Pin a comment asking a question</li><li>✅ Share on social media</li><li>✅ Respond to first 10 comments</li></ul>',
+                        order_index: 4
+                    },
+
+                    // Brand Strategy Content
+                    {
+                        module_id: createdModules[1].id,
+                        title: 'Brand Positioning Workshop',
+                        content_type: 'text',
+                        content_body: '<h2>Define Your Brand Position</h2><p>Your brand position is the <strong>unique space you own</strong> in your customer\'s mind.</p><h3>Answer These Questions:</h3><ol><li><strong>Who do you serve?</strong> (Be specific about your ideal customer)</li><li><strong>What do you do?</strong> (Your core offering)</li><li><strong>Why are you different?</strong> (What makes you unique)</li><li><strong>What transformation do you provide?</strong> (Before → After)</li></ol><p><em>Example:</em> "We help busy entrepreneurs [who] create effective content [what] without spending hours on it [difference], so they can focus on growing their business [transformation]."</p>',
+                        order_index: 1
+                    },
+                    {
+                        module_id: createdModules[1].id,
+                        title: 'Visual Identity Guidelines',
+                        content_type: 'text',
+                        content_body: '<h2>Your Visual Identity</h2><p>Consistency builds recognition. Define these <strong>visual elements</strong>:</p><h3>Colors:</h3><ul><li>Primary color: (Main brand color)</li><li>Secondary color: (Accent color)</li><li>Neutral colors: (Backgrounds, text)</li></ul><h3>Fonts:</h3><ul><li>Heading font: (Bold, attention-grabbing)</li><li>Body font: (Readable, professional)</li></ul><h3>Logo Usage:</h3><ul><li>Minimum size requirements</li><li>Clear space around logo</li><li>Acceptable color variations</li></ul><p><strong>Pro tip:</strong> Create a brand board with all these elements for easy reference!</p>',
+                        order_index: 2
+                    },
+
+                    // Social Media Content
+                    {
+                        module_id: createdModules[2].id,
+                        title: 'Content Strategy Framework',
+                        content_type: 'text',
+                        content_body: '<h2>The 4-Pillar Content Strategy</h2><p>Stop random posting. Use this framework:</p><h3>Pillar 1: Educational (40%)</h3><p>Teach something valuable. Tips, tutorials, how-tos.</p><h3>Pillar 2: Inspirational (30%)</h3><p>Motivate your audience. Success stories, quotes, wins.</p><h3>Pillar 3: Personal (20%)</h3><p>Show behind-the-scenes. Build connection and trust.</p><h3>Pillar 4: Promotional (10%)</h3><p>Sell your offer. CTA posts, product features.</p><p><strong>Balance these 4 pillars</strong> for maximum engagement and conversions!</p>',
+                        order_index: 1
+                    },
+                    {
+                        module_id: createdModules[2].id,
+                        title: 'Engagement Tactics That Work',
+                        content_type: 'text',
+                        content_body: '<h2>Boost Your Engagement</h2><p>Higher engagement = More reach. Use these tactics:</p><h3>Question Posts:</h3><ul><li>"What\'s your biggest challenge with [topic]?"</li><li>"A or B? Comment your choice!"</li></ul><h3>Fill-in-the-Blank:</h3><ul><li>"My favorite [thing] is ____"</li><li>"I wish I had started ____ sooner"</li></ul><h3>Mini-Polls:</h3><ul><li>"👍 if you agree, ❤️ if you disagree"</li><li>"Comment 1, 2, or 3 for your answer"</li></ul><h3>Story Prompts:</h3><ul><li>"Share your story in the comments!"</li><li>"Tag someone who needs to see this"</li></ul>',
+                        order_index: 2
+                    },
+
+                    // Email Marketing Content
+                    {
+                        module_id: createdModules[3].id,
+                        title: 'Welcome Sequence Template',
+                        content_type: 'text',
+                        content_body: '<h2>Your Welcome Email Sequence</h2><p>First impressions matter. Send these 5 emails over 7 days:</p><h3>Email 1 (Immediate): Welcome!</h3><p>Subject: "Welcome! Here\'s what to expect..."</p><ul><li>Thank them for subscribing</li><li>Deliver promised freebie</li><li>Set expectations</li></ul><h3>Email 2 (Day 2): Your Story</h3><p>Subject: "My journey (and why I created this)"</p><ul><li>Share your story</li><li>Build connection</li><li>Show you understand their struggles</li></ul><h3>Email 3 (Day 4): Quick Win</h3><p>Subject: "Try this one thing today"</p><ul><li>Provide actionable tip</li><li>Easy to implement</li><li>Builds trust</li></ul><h3>Email 4 (Day 6): Social Proof</h3><p>Subject: "Here\'s what others are saying..."</p><ul><li>Share testimonials</li><li>Case studies</li><li>Results</li></ul><h3>Email 5 (Day 7): The Offer</h3><p>Subject: "Ready to take the next step?"</p><ul><li>Present your offer</li><li>Clear benefits</li><li>Strong CTA</li></ul>',
+                        order_index: 1
+                    },
+
+                    // Onboarding Content
+                    {
+                        module_id: createdModules[4].id,
+                        title: 'How to Navigate This Platform',
+                        content_type: 'text',
+                        content_body: '<h2>Platform Navigation Guide</h2><p>Welcome! Here\'s how to get the most out of this platform:</p><h3>Your Dashboard:</h3><ul><li><strong>Modules:</strong> All your training content organized by topic</li><li><strong>Progress:</strong> Track which lessons you\'ve completed</li><li><strong>Resources:</strong> Downloadable templates and worksheets</li></ul><h3>Tips for Success:</h3><ol><li>Start with the Onboarding module (you\'re here!)</li><li>Work through modules in order</li><li>Take notes as you go</li><li>Implement before moving to next topic</li><li>Mark lessons complete to track progress</li></ol><p><strong>Need help?</strong> Contact support anytime! We\'re here for you. 💪</p>',
+                        order_index: 1
+                    },
+                    {
+                        module_id: createdModules[4].id,
+                        title: 'Implementation Roadmap',
+                        content_type: 'text',
+                        content_body: '<h2>Your 90-Day Implementation Plan</h2><p>Don\'t just consume content—<strong>take action!</strong> Here\'s your roadmap:</p><h3>Month 1: Foundation</h3><ul><li>Week 1: Complete Onboarding + Brand Strategy</li><li>Week 2: Define your brand position</li><li>Week 3: Create visual identity</li><li>Week 4: Document brand guidelines</li></ul><h3>Month 2: Content Creation</h3><ul><li>Week 5-6: Complete Long-Game Engine</li><li>Week 7: Plan 30 days of content</li><li>Week 8: Create content batch</li></ul><h3>Month 3: Distribution & Optimization</h3><ul><li>Week 9-10: Complete Social Media Mastery</li><li>Week 11: Launch content schedule</li><li>Week 12: Set up email sequences</li></ul><p><em>Remember:</em> Progress over perfection! 🚀</p>',
+                        order_index: 2
+                    }
+                ];
+
+                for (let i = 0; i < contentItems.length; i++) {
+                    const item = contentItems[i];
+                    item.client_id = '';
+                    const response = await fetch('tables/content_items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(item)
+                    });
+                    if (response.ok) {
+                        log(`✅ Created content: ${item.title}`, 'success');
+                    }
+                    updateProgress(50 + (i / contentItems.length) * 30, `Creating content ${i+1}/${contentItems.length}...`);
+                }
+
+                // Step 5: Create welcome message
+                updateProgress(85, 'Creating welcome message...');
+                log('Creating welcome message for demo client...', 'info');
+
+                const greetingData = {
+                    client_id: demoClient.id,
+                    greeting_message: '<h2>Welcome to Your Marketing Hub! 🎉</h2><p>Hi <strong>Demo Client</strong>!</p><p>We\'re thrilled to have you here. This platform contains <strong>everything you need</strong> to build and grow your brand:</p><ul><li>🎯 5 comprehensive training modules</li><li>📝 20+ actionable lessons</li><li>📊 Templates and worksheets</li><li>💡 Proven strategies that work</li></ul><p><strong>Start with the "Client Onboarding" module</strong> to learn how to navigate and get the most out of this platform.</p><p>Let\'s build something amazing together! 💪</p><p><em>- Your Success Team</em></p>',
+                    is_active: true
+                };
+
+                await fetch('tables/client_greetings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(greetingData)
+                });
+                log('✅ Welcome message created', 'success');
+
+                // Step 6: Mark some content as completed for demo
+                updateProgress(95, 'Adding sample progress...');
+                log('Adding sample progress tracking...', 'info');
+
+                // Mark first 3 items as complete
+                for (let i = 0; i < Math.min(3, contentItems.length); i++) {
+                    const progressData = {
+                        client_id: demoClient.id,
+                        module_id: contentItems[i].module_id,
+                        content_item_id: 'demo-item-' + i,
+                        completed: true,
+                        completed_at: Date.now()
+                    };
+                    await fetch('tables/progress', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(progressData)
+                    });
+                }
+                log('✅ Sample progress added', 'success');
+
+                // Complete!
+                updateProgress(100, 'Setup complete!');
+                log('🎉 Demo setup completed successfully!', 'success');
+                log('', 'info');
+                log('📋 Demo Credentials:', 'info');
+                log('   Email: demo@client.com', 'success');
+                log('   Password: demo123', 'success');
+                log('   URL: index.html', 'success');
+                log('', 'info');
+                log('✨ The demo is ready to show off!', 'success');
+
+                document.getElementById('successBox').style.display = 'block';
+                btn.textContent = '✅ Demo Setup Complete!';
+                btn.style.background = '#4caf50';
+
+            } catch (error) {
+                log('❌ Error during setup: ' + error.message, 'error');
+                console.error('Setup error:', error);
+                btn.disabled = false;
+                btn.textContent = '🔄 Retry Setup';
+                btn.style.background = '#f44336';
+            }
+        }
+    </script>
+</body>
+</html>

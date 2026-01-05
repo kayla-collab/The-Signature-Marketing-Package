@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Import Tool - TSMP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
+            min-height: 100vh;
+            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px);
+            color: #fff;
+            font-size: clamp(16px, 1.1vw + 14px, 20px);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 14px;
+            font-size: clamp(28px, 4vw, 42px);
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: clamp(17px, 1.9vw, 22px);
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: clamp(24px, 4vw, 40px);
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card h2 {
+            margin-bottom: 24px;
+            color: #60a5fa;
+            font-size: clamp(20px, 2.5vw, 28px);
+        }
+        .warning {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            padding: clamp(16px, 2vw, 24px);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.7;
+        }
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #bfdbfe;
+            padding: clamp(16px, 2vw, 24px);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: clamp(15px, 1.6vw, 18px);
+            line-height: 1.7;
+        }
+        .btn {
+            padding: clamp(14px, 2vw, 20px) clamp(24px, 3vw, 36px);
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(16px, 1.8vw, 20px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .file-drop {
+            border: 2px dashed rgba(96, 165, 250, 0.5);
+            border-radius: 16px;
+            padding: clamp(36px, 5vw, 56px);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+        .file-drop:hover, .file-drop.dragover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+        .file-drop input {
+            display: none;
+        }
+        .file-drop .icon {
+            font-size: clamp(48px, 6vw, 64px);
+            margin-bottom: 18px;
+        }
+        .file-drop p {
+            font-size: clamp(16px, 1.8vw, 20px);
+        }
+        .file-drop p.small {
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        .file-drop .filename {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .progress-section {
+            margin-top: 20px;
+        }
+        .progress-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+        .progress-icon {
+            width: 30px;
+            font-size: 18px;
+        }
+        .progress-name {
+            flex: 1;
+        }
+        .progress-count {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .progress-status {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        .status-pending { color: #666; }
+        .status-loading { color: #fbbf24; animation: spin 1s linear infinite; }
+        .status-done { color: #4ade80; }
+        .status-error { color: #ef4444; }
+        .status-skipped { color: #f59e0b; }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .preview {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .preview.show {
+            display: block;
+        }
+        .preview h3 {
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .preview-item {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        .preview-item .label {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .preview-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .instructions {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .result.success {
+            display: block;
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid #4ade80;
+        }
+        .result.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+        }
+        .result h3 {
+            margin-bottom: 10px;
+        }
+        .log {
+            background: #0d1b2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .log-entry { margin: 2px 0; }
+        .log-success { color: #4ade80; }
+        .log-error { color: #ef4444; }
+        .log-info { color: #60a5fa; }
+        .log-warn { color: #fbbf24; }
+        .checkbox-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Data Import Tool</h1>
+        <p class="subtitle">Import your data to this deployment</p>
+        
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li>Make sure you ran the <strong>Export Tool</strong> on your old domain first</li>
+                <li>Upload the exported JSON file below</li>
+                <li>Review the data preview</li>
+                <li>Click "Start Import" to restore your data</li>
+            </ol>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> This will ADD data to your current database. If records with the same ID already exist, they will be <strong>skipped</strong> to prevent duplicates. For a clean import, make sure the target database is empty.
+        </div>
+        
+        <div class="card">
+            <h2>📁 Upload Export File</h2>
+            
+            <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept=".json" onchange="handleFile(this.files[0])">
+                <div class="icon">📄</div>
+                <p>Drop your export file here or click to browse</p>
+                <p style="font-size: 12px;">Accepts .json files from the Export Tool</p>
+                <div class="filename" id="fileName"></div>
+            </div>
+            
+            <div class="preview" id="preview">
+                <h3>📊 Data Preview</h3>
+                <div class="preview-grid" id="previewGrid"></div>
+                
+                <div class="info">
+                    <strong>Source:</strong> <span id="sourceInfo">-</span><br>
+                    <strong>Exported:</strong> <span id="exportDate">-</span>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="importUsers" checked>
+                        Import Users (Admin & Clients)
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importModules" checked>
+                        Import Modules
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importContent" checked>
+                        Import Content Items
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importFiles" checked>
+                        Import File Metadata
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importProgress" checked>
+                        Import User Progress
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importAssignments" checked>
+                        Import Client Module Assignments
+                    </label>
+                    <label>
+                        <input type="checkbox" id="importGreetings" checked>
+                        Import Welcome Messages
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button class="btn btn-primary" id="importBtn" onclick="startImport()">
+                        🚀 Start Import
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearFile()">
+                        ✖️ Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <h3 style="margin-bottom: 15px;">Import Progress</h3>
+                <div id="progressItems"></div>
+            </div>
+            
+            <div class="result" id="result">
+                <h3 id="resultTitle">Import Complete!</h3>
+                <p id="resultMessage"></p>
+                <div class="log" id="importLog"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🧹 Clear Database (Optional)</h2>
+            <p style="color: #aaa; margin-bottom: 15px;">If you need to start fresh, you can clear all tables before importing.</p>
+            <button class="btn btn-danger" onclick="clearDatabase()">
+                🗑️ Clear All Tables
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Table configuration
+        const TABLE_CONFIG = {
+            users: { checkbox: 'importUsers', icon: '👤', name: 'Users' },
+            modules: { checkbox: 'importModules', icon: '📚', name: 'Modules' },
+            content_items: { checkbox: 'importContent', icon: '📝', name: 'Content Items' },
+            uploaded_files: { checkbox: 'importFiles', icon: '📁', name: 'Uploaded Files' },
+            progress: { checkbox: 'importProgress', icon: '📈', name: 'User Progress' },
+            client_modules: { checkbox: 'importAssignments', icon: '🔗', name: 'Client Modules' },
+            client_greetings: { checkbox: 'importGreetings', icon: '👋', name: 'Custom Greetings' },
+            global_welcome_message: { checkbox: 'importGreetings', icon: '🌍', name: 'Global Welcome' }
+        };
+        
+        let importData = null;
+        let importLog = [];
+        
+        // File drop handling
+        const fileDrop = document.getElementById('fileDrop');
+        fileDrop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDrop.classList.add('dragover');
+        });
+        fileDrop.addEventListener('dragleave', () => {
+            fileDrop.classList.remove('dragover');
+        });
+        fileDrop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDrop.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+        
+        // Handle file selection
+        function handleFile(file) {
+            if (!file) return;
+            
+            if (!file.name.endsWith('.json')) {
+                alert('Please select a JSON file');
+                return;
+            }
+            
+            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    importData = JSON.parse(e.target.result);
+                    showPreview();
+                } catch (err) {
+                    alert('Invalid JSON file. Please use a file from the Export Tool.');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Show data preview
+        function showPreview() {
+            if (!importData || !importData.tables) {
+                alert('Invalid export file format');
+                return;
+            }
+            
+            const preview = document.getElementById('preview');
+            const grid = document.getElementById('previewGrid');
+            
+            // Show metadata
+            document.getElementById('sourceInfo').textContent = importData.source || 'Unknown';
+            document.getElementById('exportDate').textContent = importData.exportedAt ? 
+                new Date(importData.exportedAt).toLocaleString() : 'Unknown';
+            
+            // Show counts
+            grid.innerHTML = '';
+            let totalRecords = 0;
+            
+            for (const [table, config] of Object.entries(TABLE_CONFIG)) {
+                const count = importData.tables[table]?.length || 0;
+                totalRecords += count;
+                grid.innerHTML += `
+                    <div class="preview-item">
+                        <div class="label">${config.icon} ${config.name}</div>
+                        <div class="value">${count}</div>
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML += `
+                <div class="preview-item" style="background: rgba(96, 165, 250, 0.2);">
+                    <div class="label">📊 Total Records</div>
+                    <div class="value">${totalRecords}</div>
+                </div>
+            `;
+            
+            preview.classList.add('show');
+        }
+        
+        // Clear file selection
+        function clearFile() {
+            importData = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('preview').classList.remove('show');
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('result').className = 'result';
+        }
+        
+        // Add log entry
+        function log(message, type = 'info') {
+            importLog.push({ message, type, time: new Date().toLocaleTimeString() });
+            const logEl = document.getElementById('importLog');
+            logEl.innerHTML = importLog.map(l => 
+                `<div class="log-entry log-${l.type}">[${l.time}] ${l.message}</div>`
+            ).join('');
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        
+        // Check if record exists
+        async function recordExists(table, id) {
+            try {
+                const response = await fetch(`tables/${table}/${id}`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+        
+        // Import a single record
+        async function importRecord(table, record) {
+            // Remove system fields that might cause conflicts
+            const cleanRecord = { ...record };
+            
+            // Remove all system/internal fields that don't exist in target schema
+            delete cleanRecord.gs_project_id;
+            delete cleanRecord.gs_table_name;
+            delete cleanRecord.created_at;
+            delete cleanRecord.updated_at;
+            delete cleanRecord._rid;           // Internal row ID from source
+            delete cleanRecord.display_name;   // Field that may not exist
+            delete cleanRecord.deleted;        // Soft delete flag
+            delete cleanRecord._v;             // Version field
+            delete cleanRecord.__v;            // Mongoose version
+            
+            // Remove any field starting with underscore (internal fields)
+            for (const key of Object.keys(cleanRecord)) {
+                if (key.startsWith('_')) {
+                    delete cleanRecord[key];
+                }
+            }
+            
+            // Keep the original ID to maintain relationships
+            const response = await fetch(`tables/${table}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cleanRecord)
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+            
+            return await response.json();
+        }
+        
+        // Start import process
+        async function startImport() {
+            if (!importData) {
+                alert('Please select an export file first');
+                return;
+            }
+            
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Importing...';
+            
+            importLog = [];
+            log('Starting import process...', 'info');
+            
+            // Show progress section
+            const progressSection = document.getElementById('progressSection');
+            const progressItems = document.getElementById('progressItems');
+            progressSection.style.display = 'block';
+            
+            // Build progress UI
+            progressItems.innerHTML = '';
+            for (const [table, config] of Object.entries(TABLE_CONFIG)) {
+                if (!document.getElementById(config.checkbox)?.checked) continue;
+                
+                progressItems.innerHTML += `
+                    <div class="progress-item" id="progress-${table}">
+                        <span class="progress-icon">${config.icon}</span>
+                        <span class="progress-name">${config.name}</span>
+                        <span class="progress-count" id="count-${table}">0 / ${importData.tables[table]?.length || 0}</span>
+                        <span class="progress-status status-pending" id="status-${table}">○</span>
+                    </div>
+                `;
+            }
+            
+            let totalImported = 0;
+            let totalSkipped = 0;
+            let totalErrors = 0;
+            
+            // Import tables in correct order (users first, then modules, then content, etc.)
+            const importOrder = [
+                'users',
+                'modules',
+                'content_items',
+                'uploaded_files',
+                'client_modules',
+                'progress',
+                'global_welcome_message',
+                'client_greetings'
+            ];
+            
+            for (const table of importOrder) {
+                const config = TABLE_CONFIG[table];
+                if (!config) continue;
+                
+                const checkbox = document.getElementById(config.checkbox);
+                if (!checkbox?.checked) continue;
+                
+                const records = importData.tables[table] || [];
+                if (records.length === 0) {
+                    log(`Skipping ${table} - no records`, 'warn');
+                    continue;
+                }
+                
+                const statusEl = document.getElementById(`status-${table}`);
+                const countEl = document.getElementById(`count-${table}`);
+                
+                if (!statusEl) continue;
+                
+                statusEl.className = 'progress-status status-loading';
+                statusEl.textContent = '↻';
+                
+                log(`Importing ${table}...`, 'info');
+                
+                let imported = 0;
+                let skipped = 0;
+                let errors = 0;
+                
+                for (let i = 0; i < records.length; i++) {
+                    const record = records[i];
+                    
+                    try {
+                        // Check if record already exists
+                        if (record.id) {
+                            const exists = await recordExists(table, record.id);
+                            if (exists) {
+                                skipped++;
+                                totalSkipped++;
+                                continue;
+                            }
+                        }
+                        
+                        await importRecord(table, record);
+                        imported++;
+                        totalImported++;
+                    } catch (error) {
+                        errors++;
+                        totalErrors++;
+                        log(`Error importing ${table} record: ${error.message}`, 'error');
+                    }
+                    
+                    // Update progress
+                    countEl.textContent = `${imported + skipped + errors} / ${records.length}`;
+                    
+                    // Small delay to prevent overwhelming the API
+                    if (i % 10 === 0) {
+                        await new Promise(r => setTimeout(r, 50));
+                    }
+                }
+                
+                // Update status
+                if (errors > 0) {
+                    statusEl.className = 'progress-status status-error';
+                    statusEl.textContent = '⚠';
+                } else if (skipped === records.length) {
+                    statusEl.className = 'progress-status status-skipped';
+                    statusEl.textContent = '○';
+                } else {
+                    statusEl.className = 'progress-status status-done';
+                    statusEl.textContent = '✓';
+                }
+                
+                log(`${table}: ${imported} imported, ${skipped} skipped, ${errors} errors`, 
+                    errors > 0 ? 'warn' : 'success');
+            }
+            
+            // Show result
+            const result = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (totalErrors > 0) {
+                result.className = 'result error';
+                resultTitle.textContent = '⚠️ Import Completed with Errors';
+            } else {
+                result.className = 'result success';
+                resultTitle.textContent = '✅ Import Complete!';
+            }
+            
+            resultMessage.innerHTML = `
+                <strong>${totalImported}</strong> records imported<br>
+                <strong>${totalSkipped}</strong> records skipped (already exist)<br>
+                <strong>${totalErrors}</strong> errors
+            `;
+            
+            log(`Import finished: ${totalImported} imported, ${totalSkipped} skipped, ${totalErrors} errors`, 
+                totalErrors > 0 ? 'warn' : 'success');
+            
+            btn.disabled = false;
+            btn.textContent = '🚀 Start Import';
+        }
+        
+        // Clear database
+        async function clearDatabase() {
+            if (!confirm('⚠️ WARNING: This will DELETE ALL DATA from all tables!\n\nAre you absolutely sure?')) {
+                return;
+            }
+            
+            if (!confirm('This action CANNOT be undone. Type "DELETE" in the next prompt to confirm.')) {
+                return;
+            }
+            
+            const confirmation = prompt('Type DELETE to confirm:');
+            if (confirmation !== 'DELETE') {
+                alert('Cancelled - database not cleared.');
+                return;
+            }
+            
+            log('Clearing database...', 'warn');
+            
+            const tables = Object.keys(TABLE_CONFIG);
+            
+            for (const table of tables) {
+                try {
+                    // Fetch all records
+                    const response = await fetch(`tables/${table}?limit=1000`);
+                    if (!response.ok) continue;
+                    
+                    const data = await response.json();
+                    const records = data.data || [];
+                    
+                    // Delete each record
+                    for (const record of records) {
+                        await fetch(`tables/${table}/${record.id}`, { method: 'DELETE' });
+                    }
+                    
+                    log(`Cleared ${table}: ${records.length} records deleted`, 'info');
+                } catch (error) {
+                    log(`Error clearing ${table}: ${error.message}`, 'error');
+                }
+            }
+            
+            log('Database cleared!', 'success');
+            alert('Database cleared. You can now import fresh data.');
+        }
+    </script>
+</body>
+</html>

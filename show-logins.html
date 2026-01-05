@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Logins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <style>
+        body { 
+            font-family: 'Open Sans', Arial, sans-serif; 
+            padding: clamp(30px, 5vw, 60px); 
+            background: #1a1a2e; 
+            color: #fff;
+            font-size: clamp(16px, 1.1vw + 14px, 20px);
+        }
+        .user { 
+            background: #2d2d44; 
+            padding: clamp(20px, 3vw, 32px); 
+            margin: 16px 0; 
+            border-radius: 14px; 
+        }
+        .admin { border-left: 5px solid #4ade80; }
+        .client { border-left: 5px solid #60a5fa; }
+        h1 { 
+            color: #4ade80; 
+            font-size: clamp(28px, 4vw, 42px);
+            margin-bottom: 24px;
+        }
+        .label { 
+            color: #aaa; 
+            font-size: clamp(13px, 1.4vw, 16px); 
+            margin-bottom: 4px;
+        }
+        .value { 
+            font-size: clamp(18px, 2vw, 24px); 
+            font-weight: bold; 
+            margin-bottom: 16px; 
+        }
+        .password { 
+            background: #000; 
+            padding: clamp(10px, 1.5vw, 16px); 
+            border-radius: 8px; 
+            font-family: monospace;
+            font-size: clamp(16px, 1.8vw, 20px);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔑 Login Credentials</h1>
+    <div id="users">Loading...</div>
+    
+    <script>
+        fetch('tables/users?limit=100')
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('users');
+                container.innerHTML = data.data.map(u => `
+                    <div class="user ${u.role}">
+                        <div class="label">Name</div>
+                        <div class="value">${u.full_name}</div>
+                        <div class="label">Email (username)</div>
+                        <div class="value">${u.email}</div>
+                        <div class="label">Password</div>
+                        <div class="value password">${u.password_hash}</div>
+                        <div class="label">Role: ${u.role} | Active: ${u.is_active ? 'Yes' : 'No'}</div>
+                    </div>
+                `).join('');
+            })
+            .catch(e => {
+                document.getElementById('users').innerHTML = 'Error: ' + e.message;
+            });
+    </script>
+</body>
+</html>
