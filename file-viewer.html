@@ -105,36 +105,37 @@
             overflow: auto;
             background: #f9f9f9;
             -webkit-overflow-scrolling: touch;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .content-wrapper {
             padding: 20px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: calc(100vh - 70px);
-            width: 100%;
-            box-sizing: border-box;
         }
 
         /* Responsive iframe container */
         .iframe-responsive-wrapper {
             width: 100%;
-            height: calc(100vh - 110px);
-            overflow: auto;
+            height: 100%;
+            max-width: 1200px;
             background: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-radius: 4px;
+            overflow: hidden;
         }
 
         iframe {
             width: 100%;
             height: 100%;
-            min-height: calc(100vh - 110px);
             border: none;
             background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transform-origin: top left;
+            transform-origin: top center;
             transition: transform 0.2s ease;
         }
 
@@ -612,22 +613,20 @@
             const content = document.getElementById('embeddedContent') || document.getElementById('fileFrame');
             if (content) {
                 const scale = currentZoom / 100;
+                // Apply transform scale
                 content.style.transform = `scale(${scale})`;
                 document.getElementById('zoomLevel').textContent = currentZoom + '%';
                 
-                // When zooming, adjust the wrapper to accommodate the scaled content
-                const wrapper = content.closest('.iframe-responsive-wrapper') || document.getElementById('contentWrapper');
-                if (wrapper) {
-                    if (scale > 1) {
-                        // When zoomed in, allow scrolling to see all content
-                        wrapper.style.overflow = 'auto';
-                        const scaledWidth = content.offsetWidth * scale;
-                        const scaledHeight = content.offsetHeight * scale;
-                        content.style.width = `${100 / scale}%`;
-                    } else {
-                        wrapper.style.overflow = 'auto';
-                        content.style.width = '100%';
-                    }
+                // Adjust container dimensions to prevent clipping when zooming out
+                // or ensure scrollability when zooming in
+                if (scale < 1) {
+                    // When zooming out, we don't need to change width, just centering
+                    content.style.width = `${100 / scale}%`;
+                    content.style.height = `${100 / scale}%`;
+                } else {
+                    // When zooming in, normal width usually works but we need to ensure it expands
+                    content.style.width = '100%';
+                    content.style.height = '100%';
                 }
             }
         }
