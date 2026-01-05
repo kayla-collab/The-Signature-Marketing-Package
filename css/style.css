@@ -829,7 +829,7 @@ body.module-focus .client-topbar {
 }
 
 body.module-focus .module-shell {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
@@ -839,6 +839,24 @@ body.module-focus .module-shell {
     padding: clamp(40px, 6vw, 64px);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-luxe);
+}
+
+/* Fullscreen Mode (Focus Mode) */
+body.fullscreen-mode .module-shell {
+    grid-template-columns: 1fr;
+    max-width: 1600px;
+}
+
+body.fullscreen-mode .module-navigator {
+    display: none;
+}
+
+body.fullscreen-mode .module-back {
+    display: none;
+}
+
+body.fullscreen-mode .module-header-top {
+    justify-content: flex-end;
 }
 
 body.module-focus .module-navigator {
